@@ -117,7 +117,8 @@ usb1m="$usbdocdir/1mstart2"
 mv $usb1m $usb1m\bk
 cp $userhomedir/1mstart2/1mstart2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
-traprestart "cli"
+#traprestart "cli"
+sudo service lightdm restart
 else
 traprestart
 fi
