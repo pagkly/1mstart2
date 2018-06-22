@@ -103,10 +103,12 @@ if [[ ! -f "$gc1mf" ]] ; then
 cur1m=$userhomedir/Documents/Documentsv2/1mstart2
 rm -rf $userhomedir/1mstart2 ;
 git clone https://github.com/pagkly/1mstart2.git
+mv $cur1m $cur1m\bk
 cp $userhomedir/1mstart2/1mstart2 $cur1m
 chmod +x $cur1m
 chown $userid $cur1m
 touch "$gc1mf"
+sleep 1
 traprestart
 
 sudo rm -f $usbdocdir/1mstart2 ;
