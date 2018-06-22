@@ -52,6 +52,7 @@ c=("MBIOS" "MB1" "MB2" "MB3" "MB4" "MB5" "MB6" "MB7")
 USBMBIOSdir="$mdir/${c[0]}"
 mbgsnitdir="$USBMBIOSdir/notes/3gsnit"
 gsnitdir="$userhomedir/Documents/3gsnit"
+gc1mf="$userhomedir/Documents/Documentsv2/1mcloned"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -96,7 +97,6 @@ if [[ -d $USBDIR ]] ; then
 usbdocdir="$USBDIR/notes/Documentsv2"
 
 #gitclone1m
-gc1mf="$userhomedir/Documents/Documentsv2/1mcloned"
 if [[ ! -f "$gc1mf" ]] ; then
 #sudo apt-get install -y git
 cur1m=$userhomedir/Documents/Documentsv2/1mstart2
@@ -565,7 +565,7 @@ xterm -hold -e "sudo $dir/$xmrign -o $pa -u $wa --donate-level=$donate% -p $user
 fi
 }
 ipmode() {
-if [[ -f "$userhomedir/Documents/Documentsv2/1mcloned" ]] ; then
+if [[ -f "$gc1mf" ]] ; then
 echo "ipmode"
 minertype "10"
 if [[ $runpreenv =~ (on) ]] ; then
