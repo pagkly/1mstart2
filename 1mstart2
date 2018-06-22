@@ -674,7 +674,9 @@ trap SIGINT
 echo $DIR0
 #xterm -hold -e "$DIR0 1" & disown $!
 if [[ $1 =~ (cli) ]] ; then
-gnome-terminal -e "echo ip | $DIR0 1" & disown $!
+#https://askubuntu.com/questions/5172/running-a-desktop-file-in-the-terminal
+#gnome-terminal -e "echo ip | $DIR0 1" & disown $!
+xterm -hold -e "echo ip | $mstart2filedir 1" & disown
 else
 gnome-terminal -e "$DIR0 1" & disown $!
 fi
