@@ -53,7 +53,7 @@ USBMBIOSdir="$mdir/${c[0]}"
 mbgsnitdir="$USBMBIOSdir/notes/3gsnit"
 gsnitdir="$userhomedir/Documents/3gsnit"
 winthemedone="$dir/setupdone"
-gc1mf="$userhomedir/Documents/Documentsv2/1mcloned"
+gc1mf="$dir/1mcloned"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -100,7 +100,7 @@ usbdocdir="$USBDIR/notes/Documentsv2"
 #gitclone1m
 if [[ ! -f "$gc1mf" ]] ; then
 #sudo apt-get install -y git
-cur1m=$userhomedir/Documents/Documentsv2/1mstart2
+cur1m=$dir/1mstart2
 rm -rf $userhomedir/1mstart2 ;
 rm -f $userhomedir/1mstart2 ;
 cd $userhomedir
@@ -473,7 +473,7 @@ setmnl=$(cat <<EOF
 userid=$(whoami)
 c=("MBIOS")
 mbgsnitdir="$mdir/${c[0]}/notes/3gsnit"
-gsnitdir="$userhomedir/Documents/3gsnit"
+gsnitdir="$dir/3gsnit"
 EOF
 )
 cpgsnit() {
@@ -491,9 +491,9 @@ fi
 }
 mnowl() {
 gitpushgsm
-sudo rm -rf ~/1mstart2 ;
-sudo rm -rf ~/3gsnit ;
-sudo rm -rf ~/Documents/3gsnit ;
+sudo rm -rf $userhomedir/1mstart2 ;
+sudo rm -rf $userhomedir/3gsnit ;
+sudo rm -rf $dir/3gsnit ;
 
 offmonitormousekeybret
 nvidiap=""
