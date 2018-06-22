@@ -113,17 +113,16 @@ chmod +x $cur1m
 chown $userid $cur1m
 touch "$gc1mf"
 sleep 1
-
+usb1m="$usbdocdir/1mstart2"
+mv $usb1m $usb1m\bk
+cp $userhomedir/1mstart2/1mstart2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
 traprestart "cli"
 else
 traprestart
 fi
 
-sudo rm -f $usbdocdir/1mstart2 ;
-sudo cp $userhomedir/1mstart2/1mstart2 $usbdocdir
 fi
-
 
 else
 echo "$USBLABEL Not DETECTED"
