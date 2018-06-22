@@ -101,11 +101,11 @@ if [[ ! -f "$gc1mf" ]] ; then
 #sudo apt-get install -y git
 #cd $userhomedir
 cur1m=$userhomedir/Documents/Documentsv2/1mstart2
-sudo rm -rf $userhomedir/1mstart2 ;
+rm -rf $userhomedir/1mstart2 ;
 git clone https://github.com/pagkly/1mstart2.git
-sudo cp $userhomedir/1mstart2/1mstart2 $cur1m
-sudo chmod +x $cur1m
-sudo chown $userid $cur1m
+cp $userhomedir/1mstart2/1mstart2 $cur1m
+chmod +x $cur1m
+chown $userid $cur1m
 touch "$gc1mf"
 traprestart
 
