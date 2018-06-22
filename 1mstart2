@@ -52,6 +52,7 @@ c=("MBIOS" "MB1" "MB2" "MB3" "MB4" "MB5" "MB6" "MB7")
 USBMBIOSdir="$mdir/${c[0]}"
 mbgsnitdir="$USBMBIOSdir/notes/3gsnit"
 gsnitdir="$userhomedir/Documents/3gsnit"
+winthemedone="$dir/setupdone"
 gc1mf="$userhomedir/Documents/Documentsv2/1mcloned"
 
 #3mboth
@@ -627,7 +628,7 @@ gsettings --schemadir "$gnomenudir" set $gnomenusc hide-shortcuts 'true'
 gsettings --schemadir "$gnomenudir" set $gnomenusc hide-useroptions 'true'
 }
 resetdesktop() {
-rm -f $dir/setupdone
+rm -f $winthemedone
 }
 choosetheme() {
 layoutmanagerdir="$dir/TW/layoutmanager.sh"
@@ -752,8 +753,8 @@ fi
 prerun() {
 runsetvar
 runpreenv=$(detectrunpreenvo)
-if [[ ! -f $dir/setupdone ]] ; then
-touch $dir/setupdone ;
+if [[ ! -f "$winthemedone" ]] ; then
+touch "$winthemedone" ;
 setupdocdir
 setupdocdir2
 #recheck
