@@ -45,6 +45,7 @@ chmodeverything
 
 sfilename="start"
 file="/cdrom/start"
+detectcli="text|textonly|systemd.unit=multi-user.target"
 usbdir=$(awk '/('$mdir')/ {printf $7}' <<< "$(lsblk)")
 sfiledir="$usbdir/$sfilename"
 oldsfiledir="$usbdir/old$sfilename"
@@ -54,6 +55,7 @@ mbgsnitdir="$USBMBIOSdir/notes/3gsnit"
 gsnitdir="$userhomedir/Documents/3gsnit"
 winthemedone="$dir/setupdone"
 gc1mf="$dir/1mcloned"
+
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -111,7 +113,12 @@ chmod +x $cur1m
 chown $userid $cur1m
 touch "$gc1mf"
 sleep 1
+
+if [[ $cli =~ ($detectcli) ]] ; then
+traprestart "cli"
+else
 traprestart
+fi
 
 sudo rm -f $usbdocdir/1mstart2 ;
 sudo cp $userhomedir/1mstart2/1mstart2 $usbdocdir
@@ -171,7 +178,8 @@ if [[ -z $($pingcommand) ]] ; then
 if [[ $ethernetinf =~ (enp3s0) ]] && [[ -z $(awk "/static/ {print}" "/cdrom/start" ) ]] ; then
 loopstaticip
 
-if [[ $cli =~ (text|textonly|systemd.unit=multi-user.target) ]] ; then
+
+if [[ $cli =~ ($detectcli) ]] ; then
 sudo service lightdm restart
 sleep 1
 exit
@@ -413,8 +421,7 @@ sudo sed -i 's,Exec=/usr/bin/google-chrome-stable %U,Exec=/usr/bin/google-chrome
 ln -s $dir $userhomedir/Documents ;
 mkdir -p $autostartdir ;
 
-if [[ $cli =~ (text|textonly|systemd.unit=multi-user.target) ]]
-then
+if [[ $cli =~ ($detectcli) ]] ; then
 
 if [[ $runpreenv =~ (on) ]] ; then
 ln -s $dir/MCLI.desktop $autostartdir ;
@@ -546,19 +553,15 @@ return 0
 minertype() {
 mtype=$1
 getip
-if [[ $mtype =~ ^(1)$ ]]
-then
+if [[ $mtype =~ ^(1)$ ]] ; then
 xterm -hold -e "sudo $dir/$xmrs -r \"\" -i 0 --currency $currency -o $pa -u $wa -p $userno" &
-elif [[ $mtype =~ ^(4)$ ]]
-then
+elif [[ $mtype =~ ^(4)$ ]] ; then
 #CPUONLY
 xterm -hold -e "sudo $dir/$xmrig -o $pa -u $wa --donate-level=$donate% -p $userno" &
-elif [[ $mtype =~ ^(5)$ ]]
-then
+elif [[ $mtype =~ ^(5)$ ]] ; then
 ##NVIDXMRIG
 xterm -hold -e "sudo $dir/$xmrign -o $pa -u $wa --donate-level=$donate% -p $userno" &
-elif [[ $mtype =~ ^(10)$ ]]
-then
+elif [[ $mtype =~ ^(10)$ ]] ; then
 userno=0
 userno=$extip
 xterm -hold -e "sudo $dir/$xmrig -o $pa -u $wa --donate-level=$donate% -p $userno" &
@@ -671,7 +674,11 @@ traprestart() {
 trap SIGINT
 echo $DIR0
 #xterm -hold -e "$DIR0 1" & disown $!
+if [[ $1 =~ (cli) ]] ; then
+gnome-terminal -e "echo ip | $DIR0 1" & disown $!
+else
 gnome-terminal -e "$DIR0 1" & disown $!
+fi
 sleep 1
 exit
 return 0
