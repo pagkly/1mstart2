@@ -426,7 +426,7 @@ if [[ $cli =~ ($detectcli) ]] ; then
 if [[ $runpreenv =~ (on) ]] ; then
 ln -s $dir/MCLI.desktop $autostartdir ;
 #MCLI2
-#offmonitormousekeybret
+offmonitormousekeybret
 else
 ln -s $dir/MCLI.desktop $autostartdir ;
 #ln -s $dir/MP.desktop $autostartdir ;
