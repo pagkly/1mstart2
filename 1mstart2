@@ -1,4 +1,5 @@
 #!/bin/bash
+
 getdirwh2() {
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -11,10 +12,10 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 DIR0="$DIR/$scriptname"
 }
 getdirwh2
+#https://unix.stackexchange.com/questions/155551/how-to-debug-a-bash-script
 echo "$DIR0"
 #####1apreparet
 basic() {
-dir="/cdrom/notes/Documentsv2"
 userid=$(awk -F: '!/root/ && /(\/bin\/bash)/ {printf $1}' /etc/passwd)
 mdir="/media/$userid"
 userhomedir="/home/$userid"
@@ -43,19 +44,24 @@ runsetvar() {
 basic
 chmodeverything
 
+dir="/cdrom/notes/Documentsv2"
 sfilename="start"
 file="/cdrom/start"
 detectcli="text|textonly|systemd.unit=multi-user.target"
+curdm="lightdm"
 usbdir=$(awk '/('$mdir')/ {printf $7}' <<< "$(lsblk)")
 sfiledir="$usbdir/$sfilename"
 oldsfiledir="$usbdir/old$sfilename"
 c=("MBIOS" "MB1" "MB2" "MB3" "MB4" "MB5" "MB6" "MB7")
 USBMBIOSdir="$mdir/${c[0]}"
-mbgsnitdir="$USBMBIOSdir/notes/3gsnit"
-gsnitdir="$userhomedir/Documents/3gsnit"
 winthemedone="$dir/setupdone"
 gc1mf="$dir/1mcloned"
-
+mb1mdir="$USBMBIOSdir/notes/Documentsv2/1mstart2"
+cur1mdir="$dir/1mstart"
+mbgsnitdir="$USBMBIOSdir/notes/3gsnit"
+curgsnitdir="$userhomedir/Documents/3gsnit"
+fn0="wintheme|inetstaton|checkdhcp|minertype"
+fn1="ipmode|choosetheme|resetdesktop|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|runxmrignturnoff|cp1m"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -71,7 +77,7 @@ winthemescdir="$dir/wintheme"
 }
 updatetime() {
 #http://www.informit.com/articles/article.aspx?p=1161217&seqNum=11
-sudo apt-get install -y ntp
+#sudo apt-get install -y ntp
 sudo cp /usr/share/zoneinfo/Australia/Melbourne /etc/localtime
 sudo hwclock --hctosys
 }
@@ -118,7 +124,7 @@ mv $usb1m $usb1m\bk
 cp $userhomedir/1mstart2/1mstart2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
 #traprestart "cli"
-sudo service lightdm restart
+restartdm
 else
 traprestart
 fi
@@ -180,7 +186,7 @@ loopstaticip
 
 
 if [[ $cli =~ ($detectcli) ]] ; then
-sudo service lightdm restart
+restartdm
 sleep 1
 exit
 fi
@@ -193,7 +199,7 @@ fi
 fi
 
 fi
-updatetime
+
 gitclone1m &
 }
 getip() {
@@ -288,7 +294,6 @@ $pingcommand
 }
 restartifaceold() {
 winf=$1
-pingcommand="ping -q -c 1 -W 3 google.com"
 while true ; do
 if ping -q -c 1 -W 1 8.8.8.8 >/dev/null ; then
 echo "connected"
@@ -401,7 +406,7 @@ Path=$1
 Terminal=false
 Type=Application
 Categories=Utility;Development;" | sudo tee -a $1/$2 ;\
-sudo chmod +x $1/$2 ;\
+sudo chmod +x $1/$2 ;
 return 0
 }
 
@@ -426,7 +431,7 @@ if [[ $cli =~ ($detectcli) ]] ; then
 if [[ $runpreenv =~ (on) ]] ; then
 ln -s $dir/MCLI.desktop $autostartdir ;
 #MCLI2
-offmonitormousekeybret
+#offmonitormousekeybret
 else
 ln -s $dir/MCLI.desktop $autostartdir ;
 #ln -s $dir/MP.desktop $autostartdir ;
@@ -435,16 +440,19 @@ echo "$runpreenv"
 else
 ln -s $dir/MP.desktop $autostartdir ;
 fi
-xhost +
 #createscript "$winthemescdir" "wintheme|oldwinthemer|newwinthemer" "$mstart2filedir" "wintheme"
 #ln -s $dir/WT.desktop $autostartdir
 }
 
-setupdocdir2(){
+restartdm(){
 xhost +
-sudo service lightdm restart
+sudo service $curdm restart
 }
 
+runxmrignturnoff() {
+offmonitormousekeybret
+ipmode &
+}
 offmonitormousekeybret() {
 #https://www.cyberciti.biz/faq/linux-disable-modprobe-loading-of-usb-storage-driver/
 #quiet splash i8042.nokbd
@@ -476,26 +484,8 @@ sudo modprobe -rf hid_generic usbhid snd_hda_codec_hdmi
 sudo rmmod -f hid_generic usbhid snd_hda_codec_hdmi
 return 0
 }
-setmnl=$(cat <<EOF
-userid=$(whoami)
-c=("MBIOS")
-mbgsnitdir="$mdir/${c[0]}/notes/3gsnit"
-gsnitdir="$dir/3gsnit"
-EOF
-)
-cpgsnit() {
-if [[ ! -f "$gsnitdir" ]] ; then
-sudo cp "$mbgsnitdir" "$gsnitdir"
-sudo chmod +x "$gsnitdir"
-sudo chown $userid "$gsnitdir"
-fi
-}
-gitpushgsm() {
-if [[ -f "$mbgsnitdir" ]] ; then
-#cpgsnit
-"$gsnitdir" gsmonce
-fi
-}
+
+
 mnowl() {
 gitpushgsm
 sudo rm -rf $userhomedir/1mstart2 ;
@@ -639,7 +629,6 @@ sudo chmod +x $layoutmanagerdir
 $layoutmanagerdir &
 }
 checkxmr() {
-xhost +
 command=$(cat <<EOF
 /opt/google/chrome/chrome --password-store=basic --tab "supportxmr.com/#/dashboard" --tab "google.com/45kFvJmKx6DapX1bQ35YzLVAs8fa41XnAMZT952QCRRrC95DFCqnFC8NC4WfcVwKDTY8qJiFkYQu9F7E4rLcyVK8P8WQtxo"
 EOF
@@ -653,19 +642,43 @@ nohup xterm -hold -e "$command" &
 #$cxmrsc & disown
 }
 startgnirehtet() {
-startandtdir="$dir/androidtether/gnirehtet-java/gnirehtet" &&\
-sudo chmod +x $startandtdir &&\
+startandtdir="$dir/androidtether/gnirehtet-java/gnirehtet"
+sudo chmod +x $startandtdir
 xterm -hold -e "$startandtdir run" &
 }
 runvpn() {
 xterm -hold -e \"$dir/FOVPN/FreeVPNconnect.sh\"
 }
 startworking() {
-if [[ -z $(awk '/nautilus|gedit|chrome/' <<< "$(ps cax)" ) ]] ; then
 #https://stackoverflow.com/questions/9117507/linux-unix-command-to-determine-if-process-is-running
-nautilus "$userhomedir/Documents/Documentsv2" & disown
-gedit "$gsnitdir" & disown
-checkxmr & disown
+echo $dir
+[[ -z $(awk '/nautilus/' <<< "$(ps cax)") ]] && nautilus "$dir" & disown
+[[ -z $(awk '/gedit/' <<< "$(ps cax)") ]] && gedit "$curgsnitdir" & disown
+[[ -z $(awk '/chrome/' <<< "$(ps cax)") ]] && checkxmr & disown
+echo $curgsnitdir
+}
+checkcur1m() {
+if [[ ! -f "$cur1mdir" ]] ; then
+cp1m
+fi
+}
+cp1m() {
+mv $cur1mdir $cur1mdir\bk
+cp "$mb1mdir" "$cur1mdir"
+chmod +x $cur1mdir
+chown $userid "$cur1mdir"
+}
+cpgsnit() {
+if [[ ! -f "$curgsnitdir" ]] ; then
+cp "$mbgsnitdir" "$curgsnitdir"
+chmod +x $curgsnitdir
+chown $userid "$curgsnitdir"
+fi
+}
+gitpushgsm() {
+if [[ -f "$mbgsnitdir" ]] ; then
+#cpgsnit
+"$curgsnitdir" gsmonce
 fi
 }
 
@@ -677,7 +690,7 @@ echo $DIR0
 if [[ $1 =~ (cli) ]] ; then
 #https://askubuntu.com/questions/5172/running-a-desktop-file-in-the-terminal
 #gnome-terminal -e "echo ip | $DIR0 1" & disown $!
-xterm -hold -e "echo ip | $mstart2filedir 1" & disown
+xterm -hold -e "echo ip | $DIR0 1" & disown $!
 else
 gnome-terminal -e "$DIR0 1" & disown $!
 fi
@@ -691,7 +704,7 @@ startno="$3"
 else
 startno="0"
 fi
-allfn=$(awk '/(^'$1'\(\) {)/ {gsub("([(){])","");print}' $2)
+allfn=$(awk '/('$1')[(][)] {/ {gsub("([(){])",""); print }' <<< "$(cat $2)")
 popfn="${popfn}"$'\n'"$allfn"
 allfnarray=($allfn)
 popfnarray=($popfn)
@@ -704,27 +717,45 @@ echo $[$f+1]".${popfnarray[f]}"
 done
 }
 errorc=0
-fn1="choosetheme|staticnomanual|startgnirehtet|resetdesktop|ipmode|checkxmr|gitpushgsm|startworking"
 choosefn() {
 read fnno
+
+if [[ $fnno =~ ^([0-9]) ]] ; then
 n=$[$fnno-1]
 fn="${popfnarray[$[$fnno-1]]}"
 echo "$n.$fn"
-if [[ $fn =~ (wintheme) ]] || [[ $fnno =~ (wintheme) ]] ; then
+
+if [[ $fn =~ (wintheme) ]] ; then
 $fn
-elif [[ $fn =~ (inetstaton) ]] || [[ $fnno =~ (inetstaton) ]]; then
+elif [[ $fn =~ (inetstaton) ]] ; then
 read -p 'COMPNO : ' number
 echo "Static ip for $number!"
 $fn "$number" &
-elif [[ $fn =~ (loopstaticip) ]] || [[ $fnno =~ (loopstaticip) ]] ; then
+elif [[ $fn =~ (loopstaticip) ]] ; then
 $fn &
-elif [[ $fn =~ (minertype) ]] || [[ $fnno =~ (minertype) ]] ; then
+elif [[ $fn =~ (minertype) ]] ; then
 read -p "MTYPE :"  mtype
 echo "$mtype!"
 $fn "$mtype"
 elif [[ $fn =~ ($fn1) ]] ; then
 $fn &
+fi
+
+
+elif [[ $fnno =~ (wintheme) ]] ; then
+$fn
+elif [[ $fnno =~ (inetstaton) ]]; then
+read -p 'COMPNO : ' number
+echo "Static ip for $number!"
+$fn "$number" &
+elif [[ $fnno =~ (loopstaticip) ]] ; then
+$fn &
+elif [[ $fnno =~ (minertype) ]] ; then
+read -p "MTYPE :"  mtype
+echo "$mtype!"
+$fn "$mtype"
 elif [[ $fnno =~ ($fn1) ]] ; then
+echo $fnno
 $fnno &
 elif [[ $fnno =~ (ip|ipmode) ]] ; then
 ipmode
@@ -734,21 +765,25 @@ sleep 1440000
 fi
 echo "nftrya"
 ((errorc++))
+
 fi
+
+echo $fnno
+
 return 0
 }
 runlistfn() {
+trap "traprestart" INT
 while true ; do
 popfn=""
-trap "traprestart" INT
-populatefn "(wintheme|inetstaton|checkdhcp|minertype|runvpn|traprestart|$fn1)" "$DIR0"
+popfn0="($fn0|$fn1)"
+populatefn "$popfn0" "$DIR0"
 printallfn
 choosefn
-trap SIGINT
 done
+trap SIGINT
 }
-#sfiledir=/cdrom/start
-#sfiledir=$mdir/MB6/start
+
 detectrunpreenvo() {
 texttodetect="(runpreenv)"
 sfiledir2=/cdrom/start
@@ -765,19 +800,18 @@ runpreenv=$(detectrunpreenvo)
 if [[ ! -f "$winthemedone" ]] ; then
 touch "$winthemedone" ;
 setupdocdir
-setupdocdir2
-#recheck
 cpgsnit
+updatetime
+restartdm
 fi
 wintheme &
 checkdhcp &
 
-if [[ -f "$USBMBIOSdir" ]] ; then
-startworking
-fi
+#if [[ -f "$USBMBIOSdir" ]] ; then
+#startworking &
+#fi
 ##sudo cp $mdir/MB4/Pass/* /etc/NetworkManager/system-connections
 }
-xhost +
 prerun
 if [[ $1 =~ ^(1)$ ]] ; then
 runlistfn
