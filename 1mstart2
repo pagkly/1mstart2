@@ -28,32 +28,34 @@ ethernetinf=$(awk '/ether/ {gsub("[:]","");print $2}' <<< "$(ip -o link show)")
 activeinetinf=$(awk '!/loopback|enp2s0f0/ && /UP/ {gsub("[:]","");print $2}' <<< "$(ip -o link show)")
 echo "$activeinetinf"
 chown $userid /cdrom ;
-return 0
 }
 chmodeverything() {
+dir="/cdrom/notes/Documentsv2"
 sudo rm -f $dir/config.txt ;
 sudo rm -f $dir/nvidia.txt ;
 sudo rm -f $dir/cpu.txt ;
 sudo rm -f $dir/xmr-stak-master/bin/config.txt ;
 sudo rm -f $dir/xmr-stak-master/bin/nvidia.txt ;
 sudo rm -f $dir/xmr-stak-master/bin/cpu.txt ;
-sudo chmod +x -R $dir ;
-return 0
+sudo chmod -R +x $dir ;
 }
 runsetvar() {
 basic
 chmodeverything
 
-dir="/cdrom/notes/Documentsv2"
 sfilename="start"
 file="/cdrom/start"
 detectcli="text|textonly|systemd.unit=multi-user.target"
 curdm="lightdm"
-usbdir=$(awk '/('$mdir')/ {printf $7}' <<< "$(lsblk)")
+usbdir=$(awk '/'$userid'/ {printf $7"\n"}' <<< "$(lsblk)")
+usbdirc=$(echo "$usbdir" | wc -l)
+[[ $usbdirc -gt 1 ]] && echo "mount only 1 USB!!! pls restart" && sleep 3600
+[[ -d "$usbdir" ]] && echo "USBDIR=$usbdir"
 sfiledir="$usbdir/$sfilename"
 oldsfiledir="$usbdir/old$sfilename"
 c=("MBIOS" "MB1" "MB2" "MB3" "MB4" "MB5" "MB6" "MB7")
 USBMBIOSdir="$mdir/${c[0]}"
+[[ -d "$USBMBIOSdir" ]] && echo "MBIOS=$USBMBIOSdir"
 winthemedone="$dir/setupdone"
 gc1mf="$dir/1mcloned"
 mb1mdir="$USBMBIOSdir/notes/Documentsv2/1mstart2"
@@ -96,6 +98,8 @@ gitclone1m() {
 #sudo rm -f ~/Documents/Documentsv2/setupdone
 #sudo $cur1m
 
+if [[ $cli =~ ($detectcli) ]] ; then
+
 endno=$[${#c[@]}-1]
 for ((a=1;a<=$endno;a++)) ; do
 USBLABEL="${c[$a]}"
@@ -135,6 +139,9 @@ else
 echo "$USBLABEL Not DETECTED"
 fi
 done
+
+fi
+
 }
  
 trial=$(cat <<EOF
@@ -514,7 +521,7 @@ wmctrl -k on ;
 #https://askubuntu.com/questions/17157/how-do-i-stop-the-screen-from-being-locked-on-suspend
 sudo sed -i "s,LOCK_SCREEN=true,#LOCK_SCREEN=true,g" /etc/default/acpi-support
 offmonitormousekeybret
-amixer -D pulse sset Master mute ;
+amixermute
 gsettings set org.gnome.desktop.lockdown disable-lock-screen 'true'
 gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend 'false'
 gsettings set org.gnome.desktop.screensaver lock-enabled false
@@ -568,9 +575,11 @@ fi
 fi
 }
 
+amixermute() {
+amixer -D pulse sset Master mute ;
+}
 wintheme() {
 #screensavernmute
-amixer -D pulse sset Master mute ;
 gsettings set org.gnome.desktop.lockdown disable-lock-screen 'true'
 gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend 'false'
 gsettings set org.gnome.desktop.screensaver lock-enabled false
@@ -651,11 +660,9 @@ xterm -hold -e \"$dir/FOVPN/FreeVPNconnect.sh\"
 }
 startworking() {
 #https://stackoverflow.com/questions/9117507/linux-unix-command-to-determine-if-process-is-running
-echo $dir
 [[ -z $(awk '/nautilus/' <<< "$(ps cax)") ]] && nautilus "$dir" & disown
 [[ -z $(awk '/gedit/' <<< "$(ps cax)") ]] && gedit "$curgsnitdir" & disown
 [[ -z $(awk '/chrome/' <<< "$(ps cax)") ]] && checkxmr & disown
-echo $curgsnitdir
 }
 checkcur1m() {
 if [[ ! -f "$cur1mdir" ]] ; then
@@ -670,14 +677,17 @@ chown $userid "$cur1mdir"
 }
 cpgsnit() {
 if [[ ! -f "$curgsnitdir" ]] ; then
+mv $curgsnitdir $curgsnitdir\bk ;
 cp "$mbgsnitdir" "$curgsnitdir"
 chmod +x $curgsnitdir
 chown $userid "$curgsnitdir"
 fi
 }
 gitpushgsm() {
+if [[ ! -f "$curgsnitdir" ]] ; then
+cpgsnit
+fi
 if [[ -f "$mbgsnitdir" ]] ; then
-#cpgsnit
 "$curgsnitdir" gsmonce
 fi
 }
@@ -773,6 +783,10 @@ echo $fnno
 return 0
 }
 runlistfn() {
+if [[ -f "$USBMBIOSdir" ]] ; then
+cpgsnit
+startworking
+fi
 trap "traprestart" INT
 while true ; do
 popfn=""
@@ -800,16 +814,11 @@ runpreenv=$(detectrunpreenvo)
 if [[ ! -f "$winthemedone" ]] ; then
 touch "$winthemedone" ;
 setupdocdir
-cpgsnit
 updatetime
 restartdm
 fi
 wintheme &
 checkdhcp &
-
-#if [[ -f "$USBMBIOSdir" ]] ; then
-#startworking &
-#fi
 ##sudo cp $mdir/MB4/Pass/* /etc/NetworkManager/system-connections
 }
 prerun
