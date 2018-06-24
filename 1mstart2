@@ -82,11 +82,17 @@ donate=0
 
 winthemescdir="$dir/wintheme"
 }
-updatetime() {
-#http://www.informit.com/articles/article.aspx?p=1161217&seqNum=11
+updatetz() {
 #sudo apt-get install -y ntp
 sudo cp /usr/share/zoneinfo/Australia/Melbourne /etc/localtime
-sudo hwclock --hctosys
+}
+updatetime() {
+#http://www.informit.com/articles/article.aspx?p=1161217&seqNum=11
+inetdate=$(date "+%y-%m-%d %H:%M:%S")
+sudo timedatectl set-ntp 0
+sudo timedatectl set-time "$inetdate"
+sudo timedatectl set-ntp 1
+#sudo hwclock
 }
 
 #nmcli dev wifi
@@ -131,8 +137,8 @@ usb1m="$usbdocdir/$onems2"
 mv $usb1m $usb1m\bk
 cp $userhomedir/$onems2/$onems2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
-restartdm
-#traprestart "cli"
+#restartdm
+traprestart "cli"
 else
 traprestart
 fi
@@ -894,6 +900,7 @@ fi
 #detectrunpreenvo
 gettimenowinnumber() {
 now=$(date +%Y%m%d%H%M%S)
+echo "nowdate=$now"
 }
 
 getthisfiledate() {
@@ -908,7 +915,7 @@ runsetvar
 runpreenv=$(detectrunpreenvo)
 if [[ ! -f "$winthemedone" ]] ; then
 touch "$winthemedone" ;
-updatetime
+updatetz
 setupdocdir
 cpgsnit
 restartdm
@@ -922,6 +929,8 @@ filedate1ms=$(getthisfiledate "$livecur1msdir")
 if [[ $filedate1ms -gt $now ]] ; then
 echo "copy1ms"
 recopy1ms
+sleep 1
+traprestart
 else
 echo "dontcopy1ms"
 
