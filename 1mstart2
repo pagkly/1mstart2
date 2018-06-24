@@ -114,7 +114,6 @@ if [[ -d $USBDIR ]] ; then
 #$mdir/${c[0]}/notes/Documentsv2
 usbdocdir="$USBDIR/notes/Documentsv2"
 
-#gitclone1m
 if [[ ! -f "$gc1mf" ]] ; then
 #sudo apt-get install -y git
 cur1m=$dir/$onems2
@@ -527,6 +526,7 @@ echo "$formattedthisfdate"
 }
 check1mwd() {
 while true ; do
+sleep 20
 check1m
 done
 }
@@ -542,7 +542,7 @@ if [[ $lastcommitdate -gt $curfiledate ]] ; then
 echo "updatenow"
 rm -f "$gc1mf" ;
 sudo killall xmrig xmrig-nvidia ;
-#gitclone1m
+gitclone1m
 fi
 }
 
