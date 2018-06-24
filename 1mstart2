@@ -131,9 +131,8 @@ usb1m="$usbdocdir/$onems2"
 mv $usb1m $usb1m\bk
 cp $userhomedir/$onems2/$onems2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
-#traprestart "cli"
-restartdm
-#traprestart "cli"
+#restartdm
+traprestart "cli"
 else
 traprestart
 fi
