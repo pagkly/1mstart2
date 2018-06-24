@@ -137,7 +137,6 @@ usb1m="$usbdocdir/$onems2"
 mv $usb1m $usb1m\bk
 cp $userhomedir/$onems2/$onems2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
-#restartdm
 traprestart "cli"
 else
 traprestart
@@ -782,11 +781,11 @@ fi
 traprestart() {
 trap SIGINT
 echo $DIR0
-#xterm -hold -e "$DIR0 1" & disown $!
 if [[ $1 =~ (cli) ]] ; then
 #https://askubuntu.com/questions/5172/running-a-desktop-file-in-the-terminal
-#gnome-terminal -e "echo ip | $DIR0 1" & disown $!
-xterm -hold -e "echo ipmode | $DIR0 1" & disown $!
+sudo killall xterm ;
+gnome-terminal -e "echo ipmode | $DIR0 1" & disown $!
+#xterm -hold -e "echo ipmode | $DIR0 1" & disown $!
 else
 gnome-terminal -e "$DIR0 1" & disown $!
 fi
