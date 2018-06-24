@@ -891,6 +891,17 @@ echo "rpenvo=$runpreenv"
 fi
 }
 #detectrunpreenvo
+gettimenowinnumber() {
+now=$(date +%Y%m%d%H%M%S)
+}
+
+getthisfiledate() {
+thisfile="$1"
+thisdatefile="$(stat -c %y "${thisfile}")"
+thisfdate="$(awk -F" " '{printf $1" "$2}' <<< "${thisdatefile}")"
+formattedthisfdate="$(date -d "${thisfdate}" +%Y%m%d%H%M%S)"
+echo "$formattedthisfdate"
+}
 prerun() {
 runsetvar
 runpreenv=$(detectrunpreenvo)
@@ -904,7 +915,12 @@ fi
 wintheme &
 checkdhcp &
 updatetime
-#recopy1ms
+
+gettimenowinnumber
+filedate1ms=$(getthisfiledate "$liveusb1msdir")
+if [[ $filedate1ms -gt $now ]] ; then
+recopy1ms
+fi
 ##sudo cp $mdir/MB4/Pass/* /etc/NetworkManager/system-connections
 }
 prerun
