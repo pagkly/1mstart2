@@ -133,6 +133,7 @@ cp $userhomedir/$onems2/$onems2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
 #traprestart "cli"
 restartdm
+#traprestart "cli"
 else
 traprestart
 fi
@@ -451,7 +452,7 @@ setupdocdir() {
 sudo rm -f $dir/M*.desktop ;
 if [[ $runpreenv =~ (off) ]] ; then
 sudo sed -ri "s/runpreenvoff/runpreenvon/g" $sfiledir1
-##tee
+echo "edited"
 fi
 createdesktopfile "$dir" "MCLI.desktop" "xterm -hold -e \"echo ipmode | $mstart2filedir 1\""
 createdesktopfile "$dir" "MP.desktop" "xterm -hold -e \"$mstart2filedir 1\""
