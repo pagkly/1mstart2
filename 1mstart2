@@ -524,6 +524,12 @@ thisfdate="$(awk -F" " '{printf $1" "$2}' <<< "${thisdatefile}")"
 formattedthisfdate="$(date -d "${thisfdate}" +%Y%m%d%H%M%S)"
 echo "$formattedthisfdate"
 }
+forcerpeoff() {
+if [[ $runpreenv =~ (off) ]] ; then
+sudo sed -ri "s/runpreenvoff/runpreenvon/g" $sfiledir1
+echo "edited"
+fi
+}
 check1mwd() {
 while true ; do
 sleep 20
@@ -545,12 +551,7 @@ else
 echo "updatenow"
 sudo killall xmrig xmrig-nvidia ;
 rm -f "$gc1mf" ;
-
-#if [[ $runpreenv =~ (off) ]] ; then
-#sudo sed -ri "s/runpreenvoff/runpreenvon/g" $sfiledir1
-#echo "edited"
-#fi
-
+forcerpeoff
 #resetdesktop
 gitclone1m
 fi
