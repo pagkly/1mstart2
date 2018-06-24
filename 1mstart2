@@ -46,7 +46,7 @@ basic
 chmodeverything
 
 sfilename="start"
-file="/cdrom/start"
+sfiledir1="/cdrom/start"
 detectcli="text|textonly|systemd.unit=multi-user.target"
 curdm="lightdm"
 usbdir=$(awk '/'$userid'/ {printf $7"\n"}' <<< "$(lsblk)")
@@ -54,7 +54,7 @@ usbdirc=$(echo "$usbdir" | wc -l)
 [[ $usbdirc -gt 1 ]] && echo "mount only 1 USB!!! pls restart" && sleep 3600
 echo "$usbdir"
 [[ -d "$usbdir" ]] && echo "USBDIR=$usbdir"
-sfiledir="$usbdir/$sfilename"
+sfiledir2="$usbdir/$sfilename"
 oldsfiledir="$usbdir/old$sfilename"
 c=("MBIOS" "MB1" "MB2" "MB3" "MB4" "MB5" "MB6" "MB7")
 USBMBIOSdir="$mdir/${c[0]}"
@@ -63,10 +63,10 @@ winthemedone="$dir/setupdone"
 gc1mf="$dir/1mcloned"
 onems2="1mstart2"
 threegsn="3gsnit"
-mb1mdir="$USBMBIOSdir/notes/Documentsv2/$onems2"
-cur1mdir="$dir/$onems2"
-mbgsnitdir="$USBMBIOSdir/notes/$threegsn"
-curgsnitdir="$userhomedir/Documents/$threegsn"
+liveusb1msdir="$USBMBIOSdir/notes/Documentsv2/$onems2"
+livecur1msdir="$dir/$onems2"
+liveusb3gsdir="$USBMBIOSdir/notes/$threegsn"
+livecur3gsdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
 fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m"
 
@@ -193,7 +193,7 @@ echo "DHCP connected"
 else
 
 if [[ -z $($pingcommand) ]] ; then
-if [[ $ethernetinf =~ (enp3s0) ]] && [[ -z $(awk "/static/ {print}" "/cdrom/start" ) ]] ; then
+if [[ $ethernetinf =~ (enp3s0) ]] && [[ -z $(awk "/static/ {print}" "$sfiledir1" ) ]] ; then
 loopstaticip
 
 
@@ -203,7 +203,7 @@ sleep 1
 exit
 fi
 
-elif [[ $ethernetinf =~ (enp3s0) ]] && [[ -n $(awk "/static/ {print}" "/cdrom/start" ) ]] ; then
+elif [[ $ethernetinf =~ (enp3s0) ]] && [[ -n $(awk "/static/ {print}" "$sfiledir1" ) ]] ; then
 detectstaticineto
 elif [[ $activeinetinf =~ (wlp3s0b1) ]] ; then
 loginpsk
@@ -268,7 +268,7 @@ if [[ ! -z $dtextobject ]] && [[ $($pingcommand) </dev/null ]]; then
 staticip=$dtextobject
 echo "$staticip"
 inetstaton "$staticip"
-awk '{gsub("'"$texttodetect"'","sta##tic");print}' "$sfiledir" > "$usbdir/newstart" &&\
+awk '{gsub("'"$texttodetect"'","sta##tic");print}' "$sfiledir2" > "$usbdir/newstart" &&\
 mv $usbdir/newstart $usbdir/start
 else
 echo "DHCP"
@@ -384,7 +384,7 @@ sudo rm -f $ifacefiledir
 sudo ip address flush enp3s0
 echo "auto lo
 iface lo inet loopback" | sudo tee -a $ifacefiledir
-sudo mv $oldsfiledir $sfiledir ;
+sudo mv $oldsfiledir $sfiledir2 ;
 }
 
 staticnomanual() {
@@ -561,7 +561,7 @@ if [[ $($pingcommand) >/dev/null ]] ; then
 echo "connected"
 else
 
-if [[ $(ls /var/lib/dhcp) >/dev/null ]] && [[ $ethernetinf =~ (enp3s0) ]] && [[ -z $(awk "/static/ {print}" "/cdrom/start" ) ]] ; then 
+if [[ $(ls /var/lib/dhcp) >/dev/null ]] && [[ $ethernetinf =~ (enp3s0) ]] && [[ -z $(awk "/static/ {print}" "$sfiledir1" ) ]] ; then 
 loopstaticip
 else
 sudo ifconfig $ethernetinf down && sleep 5 && sudo ifconfig $ethernetinf up
@@ -604,11 +604,13 @@ fi
 }
 forceipmode() {
 #formbiosonly
+sudo killall xmrig ;
+sudo killall xmrig-nvidia ;
 runpreenv="off"
 touch "$gc1mf"
 ipmode &
 sleep 5
-offmonitormousekeybret
+mnowl
 }
 
 amixermute() {
@@ -697,34 +699,34 @@ xterm -hold -e \"$dir/FOVPN/FreeVPNconnect.sh\"
 startworking() {
 #https://stackoverflow.com/questions/9117507/linux-unix-command-to-determine-if-process-is-running
 [[ -z $(awk '/nautilus/' <<< "$(ps cax)") ]] && nohup nautilus "$dir" & disown
-[[ -z $(awk '/gedit/' <<< "$(ps cax)") ]] && nohup gedit "$curgsnitdir" "$cur1mdir" & disown 
+[[ -z $(awk '/gedit/' <<< "$(ps cax)") ]] && nohup gedit "$livecur3gsdir" "$livecur1msdir" & disown 
 [[ -z $(awk '/chrome/' <<< "$(ps cax)") ]] && checkxmr & disown
 }
 checkcur1m() {
-if [[ ! -f "$cur1mdir" ]] ; then
+if [[ ! -f "$livecur1msdir" ]] ; then
 cp1m
 fi
 }
 cp1m() {
-mv $cur1mdir $cur1mdir\bk
-cp "$mb1mdir" "$cur1mdir"
-chmod +x $cur1mdir
-chown $userid "$cur1mdir"
+mv $livecur1msdir $livecur1msdir\bk
+cp "$liveusb1msdir" "$livecur1msdir"
+chmod +x $livecur1msdir
+chown $userid "$livecur1msdir"
 }
 cpgsnit() {
-if [[ ! -f "$curgsnitdir" ]] ; then
-mv $curgsnitdir $curgsnitdir\bk ;
-cp "$mbgsnitdir" "$curgsnitdir"
-chmod +x $curgsnitdir
-chown $userid "$curgsnitdir"
+if [[ ! -f "$livecur3gsdir" ]] ; then
+mv $livecur3gsdir $livecur3gsdir\bk ;
+cp "$liveusb3gsdir" "$livecur3gsdir"
+chmod +x $livecur3gsdir
+chown $userid "$livecur3gsdir"
 fi
 }
 gitpushgsm() {
-if [[ ! -f "$curgsnitdir" ]] ; then
+if [[ ! -f "$livecur3gsdir" ]] ; then
 cpgsnit
 fi
-if [[ -f "$mbgsnitdir" ]] ; then
-"$curgsnitdir" gsmonce
+if [[ -f "$liveusb3gsdir" ]] ; then
+"$livecur3gsdir" gsmonce
 fi
 }
 
@@ -819,7 +821,7 @@ echo $fnno
 return 0
 }
 runlistfn() {
-if [[ -f "$curgsnitdir" ]] && [[ -f "$mbgsnitdir" ]] && [[ -d "$USBMBIOSdir" ]] ; then
+if [[ -f "$livecur3gsdir" ]] && [[ -f "$liveusb3gsdir" ]] && [[ -d "$USBMBIOSdir" ]] ; then
 #startworking
 echo "sw"
 fi
@@ -836,8 +838,7 @@ trap SIGINT
 
 detectrunpreenvo() {
 texttodetect="(runpreenv)"
-sfiledir2=/cdrom/start
-dtextobject=$(detext "$sfiledir2" "$texttodetect")
+dtextobject=$(detext "$sfiledir1" "$texttodetect")
 if [[ ! -z $dtextobject ]] ; then
 runpreenv="$dtextobject"
 echo "rpenvo=$runpreenv"
