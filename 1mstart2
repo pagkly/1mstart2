@@ -904,7 +904,7 @@ fi
 wintheme &
 checkdhcp &
 updatetime
-recopy1ms
+#recopy1ms
 ##sudo cp $mdir/MB4/Pass/* /etc/NetworkManager/system-connections
 }
 prerun
