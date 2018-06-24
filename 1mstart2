@@ -628,6 +628,8 @@ ipmode() {
 #forautomb
 #if [[ -f "$gc1mf" ]] ; then
 #echo "ipmode"
+sudo killall xmrig ;
+sudo killall xmrig-nvidia ;
 minertype "10"
 if [[ $runpreenv =~ (on) ]] ; then
 mnowl
