@@ -68,7 +68,7 @@ cur1mdir="$dir/$onems2"
 mbgsnitdir="$USBMBIOSdir/notes/$threegsn"
 curgsnitdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
-fn1="choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m"
+fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -593,6 +593,7 @@ xterm -hold -e "sudo $dir/$xmrign -o $pa -u $wa --donate-level=$donate% -p $user
 fi
 }
 ipmode() {
+#forautomb
 if [[ -f "$gc1mf" ]] ; then
 echo "ipmode"
 minertype "10"
@@ -602,8 +603,12 @@ fi
 fi
 }
 forceipmode() {
-offmonitormousekeybret
+#formbiosonly
+runpreenv="off"
+touch "$gc1mf"
 ipmode &
+sleep 5
+offmonitormousekeybret
 }
 
 amixermute() {
