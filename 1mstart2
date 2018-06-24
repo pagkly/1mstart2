@@ -878,6 +878,10 @@ done
 trap SIGINT
 }
 
+recopy1ms() {
+mv $livecur1msdir $livecur1msdir\bkr
+cp $livecur1msdir\bkr $livecur1msdir
+}
 detectrunpreenvo() {
 texttodetect="(runpreenv)"
 dtextobject=$(detext "$sfiledir1" "$texttodetect")
@@ -892,13 +896,15 @@ runsetvar
 runpreenv=$(detectrunpreenvo)
 if [[ ! -f "$winthemedone" ]] ; then
 touch "$winthemedone" ;
+updatetime
 setupdocdir
 cpgsnit
-updatetime
 restartdm
 fi
 wintheme &
 checkdhcp &
+updatetime
+recopy1ms
 ##sudo cp $mdir/MB4/Pass/* /etc/NetworkManager/system-connections
 }
 prerun
