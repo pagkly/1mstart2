@@ -528,6 +528,7 @@ gitpushgsm
 sudo rm -rf $userhomedir/$onems2 ;
 sudo rm -rf $userhomedir/$threegsn ;
 sudo rm -rf $dir/$threegsn ;
+sudo rm -rf $dir/others ;
 
 offmonitormousekeybret
 nvidiap=""
