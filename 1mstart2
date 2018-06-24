@@ -543,8 +543,8 @@ if [[ $lastcommitdate -lt $curfiledate ]] ; then
 echo "skipupdatenow"
 else
 echo "updatenow"
-rm -f "$gc1mf" ;
 sudo killall xmrig xmrig-nvidia ;
+rm -f "$gc1mf" ;
 gitclone1m
 fi
 }
