@@ -68,7 +68,7 @@ cur1mdir="$dir/$onems2"
 mbgsnitdir="$USBMBIOSdir/notes/$threegsn"
 curgsnitdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
-fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m"
+fn1="choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -821,7 +821,7 @@ fi
 trap "traprestart" INT
 while true ; do
 popfn=""
-popfn0="($fn0|$fn1)"
+popfn0="($fn0|ipmode|$fn1)"
 populatefn "$popfn0" "$DIR0"
 printallfn
 choosefn
