@@ -562,7 +562,7 @@ else
 echo "updatenow"
 sudo killall xmrig xmrig-nvidia ;
 rm -f "$gc1mf" ;
-forcerpeon
+forcerpeoff
 #resetdesktop
 gitclone1m
 fi
