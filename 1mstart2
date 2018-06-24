@@ -68,7 +68,7 @@ livecur1msdir="$dir/$onems2"
 liveusb3gsdir="$USBMBIOSdir/notes/$threegsn"
 livecur3gsdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
-fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m|check1m|forcegc1m"
+fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|cp1m|check1m|forcegc1m|forceipmode"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -95,10 +95,13 @@ sudo timedatectl set-ntp 1
 #sudo hwclock
 }
 
-#nmcli dev wifi
-#sudo iw dev wlan0 scan | grep SSID
-#https://askubuntu.com/questions/567006/how-can-i-display-the-list-of-available-wifi-networks
-#https://askubuntu.com/questions/423355/how-do-i-check-if-a-package-is-installed-on-my-server
+getcurfiledate() {
+thisdatefile="$(stat -c %y "$DIR0")"
+thisfdate="$(awk -F" " '{printf $1" "$2}' <<< "${thisdatefile}")"
+formattedthisfdate="$(date -d "${thisfdate}" +%Y%m%d%H%M%S)"
+echo "$formattedthisfdate"
+}
+
 gitclone1m() {
 #sudo apt-get update --fix-missing ;
 #sudo apt-get install -y libmicrohttpd-dev \
@@ -289,6 +292,7 @@ fi
 #umountusb &
 }
 loginpsk() {
+#https://askubuntu.com/questions/423355/how-do-i-check-if-a-package-is-installed-on-my-server
 #https://askubuntu.com/questions/567006/how-can-i-display-the-list-of-available-wifi-networks
 disconnectcommand="nmcli d disconnect $activeinetinf"
 #nmcli dev wifi
@@ -531,24 +535,7 @@ sudo rmmod -f hid_generic usbhid snd_hda_codec_hdmi
 return 0
 }
 
-getcurfiledate() {
-thisdatefile="$(stat -c %y "$DIR0")"
-thisfdate="$(awk -F" " '{printf $1" "$2}' <<< "${thisdatefile}")"
-formattedthisfdate="$(date -d "${thisfdate}" +%Y%m%d%H%M%S)"
-echo "$formattedthisfdate"
-}
-forcerpeon() {
-if [[ $runpreenv =~ (off) ]] ; then
-sudo sed -ri "s/runpreenvoff/runpreenvon/g" $sfiledir1
-echo "edited1"
-fi
-}
-forcerpeoff() {
-if [[ $runpreenv =~ (on) ]] ; then
-sudo sed -ri "s/runpreenvon/runpreenvoff/g" $sfiledir1
-echo "edited2"
-fi
-}
+
 check1mwd() {
 while true ; do
 sleep 20
@@ -665,6 +652,7 @@ fi
 }
 forceipmode() {
 #formbiosonly
+forcerpeon
 sudo killall xmrig ;
 sudo killall xmrig-nvidia ;
 runpreenv="off"
@@ -727,6 +715,20 @@ gsettings --schemadir "$gnomenudir" set $gnomenusc panel-menu-label-text ["''"]
 gsettings --schemadir "$gnomenudir" set $gnomenusc disable-panel-menu-keyboard 'true'
 gsettings --schemadir "$gnomenudir" set $gnomenusc hide-shortcuts 'true'
 gsettings --schemadir "$gnomenudir" set $gnomenusc hide-useroptions 'true'
+}
+
+
+forcerpeon() {
+if [[ $runpreenv =~ (off) ]] ; then
+sudo sed -ri "s/runpreenvoff/runpreenvon/g" $sfiledir1
+echo "edited1"
+fi
+}
+forcerpeoff() {
+if [[ $runpreenv =~ (on) ]] ; then
+sudo sed -ri "s/runpreenvon/runpreenvoff/g" $sfiledir1
+echo "edited2"
+fi
 }
 resetdesktop() {
 rm -f $winthemedone
