@@ -545,6 +545,7 @@ else
 echo "updatenow"
 sudo killall xmrig xmrig-nvidia ;
 rm -f "$gc1mf" ;
+resetdesktop
 gitclone1m
 fi
 }
