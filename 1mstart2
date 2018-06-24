@@ -540,8 +540,9 @@ curfiledate=$(getcurfiledate)
 echo "$curfiledate $lastcommitdate"
 if [[ $lastcommitdate -gt $curfiledate ]] ; then
 echo "updatenow"
-rm -f "$gc1mf"
-gitclone1m
+rm -f "$gc1mf" ;
+sudo killall xmrig xmrig-nvidia ;
+#gitclone1m
 fi
 }
 
@@ -624,7 +625,7 @@ ipmode() {
 #forautomb
 #if [[ -f "$gc1mf" ]] ; then
 #echo "ipmode"
-minertype "10"
+#####minertype "10"
 if [[ $runpreenv =~ (on) ]] ; then
 mnowl
 fi
