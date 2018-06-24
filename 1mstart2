@@ -68,7 +68,7 @@ livecur1msdir="$dir/$onems2"
 liveusb3gsdir="$USBMBIOSdir/notes/$threegsn"
 livecur3gsdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
-fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m|check1m"
+fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m|check1m|gitclone1m"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
