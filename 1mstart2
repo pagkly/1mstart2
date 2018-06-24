@@ -794,7 +794,7 @@ gnome-terminal -e "echo ipmode | $DIR0 1" & disown $!
 else
 gnome-terminal -e "$DIR0 1" & disown $!
 fi
-sudo killall xterm ;
+#sudo killall xterm ;
 sleep 1
 exit
 return 0
