@@ -786,7 +786,7 @@ echo $DIR0
 if [[ $1 =~ (cli) ]] ; then
 #https://askubuntu.com/questions/5172/running-a-desktop-file-in-the-terminal
 #gnome-terminal -e "echo ip | $DIR0 1" & disown $!
-xterm -hold -e "echo ip | $DIR0 1" & disown $!
+xterm -hold -e "echo ipmode | $DIR0 1" & disown $!
 else
 gnome-terminal -e "$DIR0 1" & disown $!
 fi
