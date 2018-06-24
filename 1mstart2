@@ -538,7 +538,10 @@ content=$(wget $link -q -O -)
 lastcommitdate="$(awk 'match($0, /([0-9]{14})( commit by ubuntu)/) {print substr($0, RSTART, 14)}' <<< "$content" | awk 'NR==1 {print}')"
 curfiledate=$(getcurfiledate)
 echo "$curfiledate $lastcommitdate"
-if [[ $lastcommitdate -gt $curfiledate ]] ; then
+
+if [[ $lastcommitdate -lt $curfiledate ]] ; then
+echo "skipupdatenow"
+else
 echo "updatenow"
 rm -f "$gc1mf" ;
 sudo killall xmrig xmrig-nvidia ;
