@@ -134,7 +134,7 @@ chown $userid $cur1m
 touch "$gc1mf"
 sleep 1
 usb1m="$usbdocdir/$onems2"
-mv $usb1m $usb1m\bk
+mv $usb1m $usb1m\bk ;
 cp $userhomedir/$onems2/$onems2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
 traprestart "cli"
@@ -529,10 +529,16 @@ thisfdate="$(awk -F" " '{printf $1" "$2}' <<< "${thisdatefile}")"
 formattedthisfdate="$(date -d "${thisfdate}" +%Y%m%d%H%M%S)"
 echo "$formattedthisfdate"
 }
-forcerpeoff() {
+forcerpeon() {
 if [[ $runpreenv =~ (off) ]] ; then
 sudo sed -ri "s/runpreenvoff/runpreenvon/g" $sfiledir1
-echo "edited"
+echo "edited1"
+fi
+}
+forcerpeoff() {
+if [[ $runpreenv =~ (on) ]] ; then
+sudo sed -ri "s/runpreenvon/runpreenvoff/g" $sfiledir1
+echo "edited2"
 fi
 }
 check1mwd() {
@@ -556,7 +562,7 @@ else
 echo "updatenow"
 sudo killall xmrig xmrig-nvidia ;
 rm -f "$gc1mf" ;
-#forcerpeoff
+forcerpeon
 #resetdesktop
 gitclone1m
 fi
