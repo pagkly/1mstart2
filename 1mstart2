@@ -68,7 +68,7 @@ livecur1msdir="$dir/$onems2"
 liveusb3gsdir="$USBMBIOSdir/notes/$threegsn"
 livecur3gsdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
-fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m|check1m|gitclone1m"
+fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m|check1m|forcegitclone1m"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -112,7 +112,12 @@ gitclone1m() {
 if [[ $cli =~ ($detectcli) ]] ; then
 
 endno=$[${#c[@]}-1]
-for ((a=1;a<=$endno;a++)) ; do
+if [[ $1 =~ (force) ]] ; then
+begno=0
+else
+begno=1
+fi
+for ((a=$begno;a<=$endno;a++)) ; do
 USBLABEL="${c[$a]}"
 USBDIR="$mdir/$USBLABEL"
 echo "$a $USBDIR"
@@ -562,12 +567,15 @@ else
 echo "updatenow"
 sudo killall xmrig xmrig-nvidia ;
 rm -f "$gc1mf" ;
-forcerpeoff
+forcerpeon
 #resetdesktop
 gitclone1m
 fi
 }
 
+forcegc1m() {
+gitclone1m "force"
+}
 mnowl() {
 if [[ -d "$USBMBIOSdir" ]] ; then
 gitpushgsm
