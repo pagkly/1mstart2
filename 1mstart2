@@ -881,6 +881,7 @@ trap SIGINT
 recopy1ms() {
 mv $livecur1msdir $livecur1msdir\bkr
 cp $livecur1msdir\bkr $livecur1msdir
+chmod +x $livecur1msdir
 }
 detectrunpreenvo() {
 texttodetect="(runpreenv)"
