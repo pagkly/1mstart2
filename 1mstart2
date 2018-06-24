@@ -536,33 +536,7 @@ return 0
 }
 
 
-check1mwd() {
-while true ; do
-sleep 20
-check1m
-done
-}
-check1m() {
-#https://stackoverflow.com/questions/3742983/how-to-get-the-contents-of-a-webpage-in-a-shell-variable
-#latestcommitdate="git show -s --format=%ci https://github.com/pagkly/1mstart2.git"
-link="github.com/pagkly/1mstart2"
-content=$(wget $link -q -O -)
-lastcommitdate="$(awk 'match($0, /([0-9]{14})( commit by ubuntu)/) {print substr($0, RSTART, 14)}' <<< "$content" | awk 'NR==1 {print}')"
-curfiledate=$(getcurfiledate)
-echo "$curfiledate $lastcommitdate"
 
-if [[ $lastcommitdate -lt $curfiledate ]] ; then
-echo "skipupdatenow"
-else
-echo "updatenow"
-forcerpeon
-gitclone1m "force"
-fi
-}
-
-forcegc1m() {
-gitclone1m "force"
-}
 mnowl() {
 if [[ -d "$USBMBIOSdir" ]] ; then
 gitpushgsm
@@ -791,6 +765,34 @@ fi
 if [[ -f "$liveusb3gsdir" ]] ; then
 "$livecur3gsdir" gsmonce
 fi
+}
+
+check1mwd() {
+while true ; do
+sleep 20
+check1m
+done
+}
+check1m() {
+#https://stackoverflow.com/questions/3742983/how-to-get-the-contents-of-a-webpage-in-a-shell-variable
+#latestcommitdate="git show -s --format=%ci https://github.com/pagkly/1mstart2.git"
+link="github.com/pagkly/1mstart2"
+content=$(wget $link -q -O -)
+lastcommitdate="$(awk 'match($0, /([0-9]{14})( commit by ubuntu)/) {print substr($0, RSTART, 14)}' <<< "$content" | awk 'NR==1 {print}')"
+curfiledate=$(getcurfiledate)
+echo "$curfiledate $lastcommitdate"
+
+if [[ $lastcommitdate -lt $curfiledate ]] ; then
+echo "skipupdatenow"
+else
+echo "updatenow"
+forcerpeon
+gitclone1m "force"
+fi
+}
+
+forcegc1m() {
+gitclone1m "force"
 }
 
 #####FNENGINE
