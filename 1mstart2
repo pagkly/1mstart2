@@ -449,10 +449,6 @@ return 0
 
 setupdocdir() {
 sudo rm -f $dir/M*.desktop ;
-if [[ $runpreenv =~ (off) ]] ; then
-sudo sed -ri "s/runpreenvoff/runpreenvon/g" $sfiledir1
-echo "edited"
-fi
 createdesktopfile "$dir" "MCLI.desktop" "xterm -hold -e \"echo ipmode | $mstart2filedir 1\""
 createdesktopfile "$dir" "MP.desktop" "xterm -hold -e \"$mstart2filedir 1\""
 createdesktopfile "$dir/androidtether/gnirehtet-java" "startandt.desktop" "xterm -hold -e \"$dir/androidtether/gnirehtet-java/gnirehtet run\""
@@ -549,6 +545,12 @@ else
 echo "updatenow"
 sudo killall xmrig xmrig-nvidia ;
 rm -f "$gc1mf" ;
+
+#if [[ $runpreenv =~ (off) ]] ; then
+#sudo sed -ri "s/runpreenvoff/runpreenvon/g" $sfiledir1
+#echo "edited"
+#fi
+
 #resetdesktop
 gitclone1m
 fi
