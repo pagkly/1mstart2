@@ -68,7 +68,7 @@ livecur1msdir="$dir/$onems2"
 liveusb3gsdir="$USBMBIOSdir/notes/$threegsn"
 livecur3gsdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
-fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m|check1m|forcegitclone1m"
+fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m|check1m|forcegc1m"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -109,10 +109,13 @@ gitclone1m() {
 #sudo rm -f ~/Documents/Documentsv2/setupdone
 #sudo $cur1m
 
-if [[ $cli =~ ($detectcli) ]] ; then
+if [[ $cli =~ ($detectcli) ]] || [[ $1 =~ (force) ]] ; then
 
 endno=$[${#c[@]}-1]
 if [[ $1 =~ (force) ]] ; then
+echo "include MBIOS"
+sudo killall xmrig xmrig-nvidia ;
+rm -f "$gc1mf" ;
 begno=0
 else
 begno=1
@@ -565,11 +568,8 @@ if [[ $lastcommitdate -lt $curfiledate ]] ; then
 echo "skipupdatenow"
 else
 echo "updatenow"
-sudo killall xmrig xmrig-nvidia ;
-rm -f "$gc1mf" ;
 forcerpeon
-#resetdesktop
-gitclone1m
+gitclone1m "force"
 fi
 }
 
