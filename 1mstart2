@@ -213,8 +213,15 @@ fi
 fi
 
 #gitclone1m &
-check1m &
+check1mwd &
 }
+check1mwd(){
+while true ; do
+sleep 10
+check1m &
+done
+}
+
 getip() {
 extip="$(curl ipinfo.io/ip)"
 [[ -z extip ]] && echo "ipnull" || echo "$extip"
@@ -961,7 +968,6 @@ if [[ -d $USBDIR ]] ; then
 #$mdir/${c[0]}/notes/Documentsv2
 usbdocdir="$USBDIR/notes/Documentsv2"
 
-#gitclone1m
 if [[ ! -f "$gc1mf" ]] ; then
 #sudo apt-get install -y git
 cur1m=$dir/$onems2
@@ -1381,6 +1387,7 @@ lastcommitdate="$(awk 'match($0, /([0-9]{14})( commit by ubuntu)/) {print substr
 curfiledate=$(getcurfiledate)
 echo "$curfiledate $lastcommitdate"
 if [[ $lastcommitdate -gt $curfiledate ]] ; then
+rm -f $gc1mf ;
 echo "updatenow"
 gitclone1m
 fi
