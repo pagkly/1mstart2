@@ -52,6 +52,7 @@ curdm="lightdm"
 usbdir=$(awk '/'$userid'/ {printf $7"\n"}' <<< "$(lsblk)")
 usbdirc=$(echo "$usbdir" | wc -l)
 [[ $usbdirc -gt 1 ]] && echo "mount only 1 USB!!! pls restart" && sleep 3600
+echo "$usbdir"
 [[ -d "$usbdir" ]] && echo "USBDIR=$usbdir"
 sfiledir="$usbdir/$sfilename"
 oldsfiledir="$usbdir/old$sfilename"
@@ -67,7 +68,7 @@ cur1mdir="$dir/$onems2"
 mbgsnitdir="$USBMBIOSdir/notes/$threegsn"
 curgsnitdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
-fn1="ipmode|choosetheme|resetdesktop|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|runxmrignturnoff|cp1m"
+fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|runxmrignturnoff|cp1m"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -275,9 +276,34 @@ fi
 #umountusb &
 }
 loginpsk() {
-nmcli d disconnect $activeinetinf
-nmcli d wifi connect "OPTUS_A33E22" password "carine@339204"
-nmcli d wifi connect "BelongKM7KJGQH" password "4H3GYXTKYR"
+#https://askubuntu.com/questions/567006/how-can-i-display-the-list-of-available-wifi-networks
+disconnectcommand="nmcli d disconnect $activeinetinf"
+#nmcli dev wifi
+#sudo iw dev wlan0 scan | grep SSID
+wifilist=$(cat<<EOF
+OPTUS_A33E22;;carine@339204
+BelongKM7KJGQH;;4H3GYXTKYR
+EOF
+)
+wifilista=("$wifilist")
+lista="$wifilista"
+begno=1
+endno=$[${#wifilista[@]}+1]
+for ((i=$begno;i<=$endno;i++)) ; do
+SSID="$(awk -F';;' 'NR=='$i'{printf $1}' <<< "$wifilista")"
+PASSWD="$(awk -F';;' 'NR=='$i'{printf $2}' <<< "$wifilista")"
+detectwificommand="sudo iw dev wlan0 scan | grep "$SSID""
+connectcommand="nmcli d wifi connect "$SSID" password "$PASSWD""
+if [[ $1 =~ ^(t)$ ]] ; then
+#echo "$lista"
+#echo "$begno $endno"
+echo "$detectwificommand"
+echo "$connectcommand"
+elif [[ -z $1 ]] ; then
+$disconnectcommand
+[[ -n $detectwificommand ]] && $connectcommand
+fi
+done
 }
 inetstaton() {
 #https://unix.stackexchange.com/questions/44376/how-to-find-out-if-ubuntu-is-using-dhcp-ubuntu-12-04-lts-gui?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
@@ -664,10 +690,8 @@ xterm -hold -e \"$dir/FOVPN/FreeVPNconnect.sh\"
 }
 startworking() {
 #https://stackoverflow.com/questions/9117507/linux-unix-command-to-determine-if-process-is-running
-[[ -z $(awk '/nautilus/' <<< "$(ps cax)") ]] && nautilus "$dir" & disown
-[[ -z $(awk '/gedit/' <<< "$(ps cax)") ]] && gedit "$curgsnitdir" "$cur1mdir" & disown 
-#&& gedit "$cur1mdir" & disown
-
+[[ -z $(awk '/nautilus/' <<< "$(ps cax)") ]] && nohup nautilus "$dir" & disown
+[[ -z $(awk '/gedit/' <<< "$(ps cax)") ]] && nohup gedit "$curgsnitdir" "$cur1mdir" & disown 
 [[ -z $(awk '/chrome/' <<< "$(ps cax)") ]] && checkxmr & disown
 }
 checkcur1m() {
