@@ -918,9 +918,13 @@ checkdhcp &
 updatetime
 
 gettimenowinnumber
-filedate1ms=$(getthisfiledate "$liveusb1msdir")
+filedate1ms=$(getthisfiledate "$livecur1msdir")
 if [[ $filedate1ms -gt $now ]] ; then
+echo "copy1ms"
 recopy1ms
+else
+echo "dontcopy1ms"
+
 fi
 ##sudo cp $mdir/MB4/Pass/* /etc/NetworkManager/system-connections
 }
