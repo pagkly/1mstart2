@@ -609,7 +609,7 @@ sudo killall xmrig-nvidia ;
 runpreenv="off"
 touch "$gc1mf"
 ipmode &
-sleep 5
+#sleep 5
 mnowl
 }
 
@@ -822,7 +822,7 @@ return 0
 }
 runlistfn() {
 if [[ -f "$livecur3gsdir" ]] && [[ -f "$liveusb3gsdir" ]] && [[ -d "$USBMBIOSdir" ]] ; then
-#startworking
+startworking
 echo "sw"
 fi
 trap "traprestart" INT
