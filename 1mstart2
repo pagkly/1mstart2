@@ -68,7 +68,7 @@ livecur1msdir="$dir/$onems2"
 liveusb3gsdir="$USBMBIOSdir/notes/$threegsn"
 livecur3gsdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
-fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m"
+fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|forceipmode|cp1m|check1m"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -212,7 +212,8 @@ fi
 
 fi
 
-gitclone1m &
+#gitclone1m &
+check1m &
 }
 getip() {
 extip="$(curl ipinfo.io/ip)"
@@ -518,9 +519,30 @@ sudo rmmod -f hid_generic usbhid snd_hda_codec_hdmi
 return 0
 }
 
+getcurfiledate() {
+thisdatefile="$(stat -c %y "$DIR0")"
+thisfdate="$(awk -F" " '{printf $1" "$2}' <<< "${thisdatefile}")"
+formattedthisfdate="$(date -d "${thisfdate}" +%Y%m%d%H%M%S)"
+echo "$formattedthisfdate"
+}
+check1m() {
+#https://stackoverflow.com/questions/3742983/how-to-get-the-contents-of-a-webpage-in-a-shell-variable
+#latestcommitdate="git show -s --format=%ci https://github.com/pagkly/1mstart2.git"
+link="github.com/pagkly/1mstart2"
+content=$(wget $link -q -O -)
+lastcommitdate="$(awk 'match($0, /([0-9]{14})( commit by ubuntu)/) {print substr($0, RSTART, 14)}' <<< "$content" | awk 'NR==1 {print}')"
+curfiledate=$(getcurfiledate)
+echo "$curfiledate $lastcommitdate"
+if [[ $lastcommitdate -gt $curfiledate ]] ; then
+echo "updatenow"
+#gitclone1m
+fi
+}
 
 mnowl() {
+if [[ -d "$USBMBIOSdir" ]] ; then
 gitpushgsm
+fi
 sudo rm -rf $userhomedir/$onems2 ;
 sudo rm -rf $userhomedir/$threegsn ;
 sudo rm -rf $dir/$threegsn ;
@@ -568,8 +590,9 @@ sudo ifconfig $ethernetinf down && sleep 5 && sudo ifconfig $ethernetinf up
 fi
 
 fi
-sleep 30
 umountusb
+sleep 30
+#check1m
 done
 return 0
 }
@@ -828,7 +851,7 @@ fi
 trap "traprestart" INT
 while true ; do
 popfn=""
-popfn0="($fn0|ipmode|$fn1)"
+popfn0="($fn0|$fn1)"
 populatefn "$popfn0" "$DIR0"
 printallfn
 choosefn
