@@ -31,6 +31,8 @@ chown $userid /cdrom ;
 }
 chmodeverything() {
 dir="/cdrom/notes/Documentsv2"
+#dir="$userhomedir/Documents/Documentsv2"
+#/home/ubuntu/Documents/Documentsv2
 sudo rm -f $dir/config.txt ;
 sudo rm -f $dir/nvidia.txt ;
 sudo rm -f $dir/cpu.txt ;
@@ -58,10 +60,12 @@ USBMBIOSdir="$mdir/${c[0]}"
 [[ -d "$USBMBIOSdir" ]] && echo "MBIOS=$USBMBIOSdir"
 winthemedone="$dir/setupdone"
 gc1mf="$dir/1mcloned"
-mb1mdir="$USBMBIOSdir/notes/Documentsv2/1mstart2"
-cur1mdir="$dir/1mstart"
-mbgsnitdir="$USBMBIOSdir/notes/3gsnit"
-curgsnitdir="$userhomedir/Documents/3gsnit"
+onems2="1mstart2"
+threegsn="3gsnit"
+mb1mdir="$USBMBIOSdir/notes/Documentsv2/$onems2"
+cur1mdir="$dir/$onems2"
+mbgsnitdir="$USBMBIOSdir/notes/$threegsn"
+curgsnitdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
 fn1="ipmode|choosetheme|resetdesktop|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|runxmrignturnoff|cp1m"
 
@@ -112,20 +116,20 @@ usbdocdir="$USBDIR/notes/Documentsv2"
 #gitclone1m
 if [[ ! -f "$gc1mf" ]] ; then
 #sudo apt-get install -y git
-cur1m=$dir/1mstart2
-rm -rf $userhomedir/1mstart2 ;
-rm -f $userhomedir/1mstart2 ;
+cur1m=$dir/$onems2
+rm -rf $userhomedir/$onems2 ;
+rm -f $userhomedir/$onems2 ;
 cd $userhomedir
-git clone https://github.com/pagkly/1mstart2.git
+git clone https://github.com/pagkly/$onems2.git
 mv $cur1m $cur1m\bk
-cp $userhomedir/1mstart2/1mstart2 $cur1m
+cp $userhomedir/$onems2/$onems2 $cur1m
 chmod +x $cur1m
 chown $userid $cur1m
 touch "$gc1mf"
 sleep 1
-usb1m="$usbdocdir/1mstart2"
+usb1m="$usbdocdir/$onems2"
 mv $usb1m $usb1m\bk
-cp $userhomedir/1mstart2/1mstart2 $usbdocdir
+cp $userhomedir/$onems2/$onems2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
 #traprestart "cli"
 restartdm
@@ -495,9 +499,9 @@ return 0
 
 mnowl() {
 gitpushgsm
-sudo rm -rf $userhomedir/1mstart2 ;
-sudo rm -rf $userhomedir/3gsnit ;
-sudo rm -rf $dir/3gsnit ;
+sudo rm -rf $userhomedir/$onems2 ;
+sudo rm -rf $userhomedir/$threegsn ;
+sudo rm -rf $dir/$threegsn ;
 
 offmonitormousekeybret
 nvidiap=""
@@ -661,7 +665,9 @@ xterm -hold -e \"$dir/FOVPN/FreeVPNconnect.sh\"
 startworking() {
 #https://stackoverflow.com/questions/9117507/linux-unix-command-to-determine-if-process-is-running
 [[ -z $(awk '/nautilus/' <<< "$(ps cax)") ]] && nautilus "$dir" & disown
-[[ -z $(awk '/gedit/' <<< "$(ps cax)") ]] && gedit "$curgsnitdir" & disown
+[[ -z $(awk '/gedit/' <<< "$(ps cax)") ]] && gedit "$curgsnitdir" "$cur1mdir" & disown 
+#&& gedit "$cur1mdir" & disown
+
 [[ -z $(awk '/chrome/' <<< "$(ps cax)") ]] && checkxmr & disown
 }
 checkcur1m() {
@@ -783,8 +789,7 @@ echo $fnno
 return 0
 }
 runlistfn() {
-if [[ -f "$USBMBIOSdir" ]] ; then
-cpgsnit
+if [[ -f "$curgsnitdir" ]] && [[ -f "$mbgsnitdir" ]] && [[ -d "$USBMBIOSdir" ]] ; then
 startworking
 fi
 trap "traprestart" INT
@@ -814,6 +819,7 @@ runpreenv=$(detectrunpreenvo)
 if [[ ! -f "$winthemedone" ]] ; then
 touch "$winthemedone" ;
 setupdocdir
+cpgsnit
 updatetime
 restartdm
 fi
