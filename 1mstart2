@@ -622,6 +622,10 @@ xterm -hold -e "sudo $dir/$xmrig -o $pa -u $wa --donate-level=$donate% -p $usern
 xterm -hold -e "sudo $dir/$xmrign -o $pa -u $wa --donate-level=$donate% -p $userno" &
 fi
 }
+ipmode2() {
+echo "bla2"
+sleep 3600
+}
 ipmode() {
 #forautomb
 #if [[ -f "$gc1mf" ]] ; then
@@ -806,14 +810,8 @@ gitclone1m "force"
 }
 
 #####FNENGINE
-#restartcmd="$DIR0 1"
-#ipmodecmd="$DIR0 1 ipmode"
-#gtermipmode="gnome-terminal -e "$ipmodecmd" & disown $!"
-#xtermipmode="xterm -hold -e "$ipmodecmd" & disown $!"
-#gtermrestart="gnome-terminal -e "$restartcmd" & disown $!"
-#xtermrestart="xterm -hold -e "$restartcmd" & disown $!"
-
 traprestart() {
+#https://askubuntu.com/questions/5172/running-a-desktop-file-in-the-terminal
 trap SIGINT
 echo $DIR0
 if [[ $1 =~ (auto) ]] ; then
@@ -821,9 +819,7 @@ if [[ $cli =~ ($detectcli) ]] ; then
 gnome-terminal -e "$ipmodecmd" & disown $!
 fi
 elif [[ $1 =~ (cli) ]] ; then
-#https://askubuntu.com/questions/5172/running-a-desktop-file-in-the-terminal
 gnome-terminal -e "$ipmodecmd" & disown $!
-#$xtermipmode
 else
 gnome-terminal -e "$restartcmd" & disown $!
 fi
