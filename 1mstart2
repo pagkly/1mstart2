@@ -69,6 +69,12 @@ liveusb3gsdir="$USBMBIOSdir/notes/$threegsn"
 livecur3gsdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype"
 fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|cp1m|check1m|forcegc1m|forceipmode"
+restartcmd="$DIR0 1"
+ipmodecmd="$DIR0 1 ipmode"
+gtermipmode="gnome-terminal -e "$ipmodecmd" & disown $!"
+xtermipmode="xterm -hold -e "$ipmodecmd" & disown $!"
+gtermrestart="gnome-terminal -e "$restartcmd" & disown $!"
+xtermrestart="xterm -hold -e "$restartcmd" & disown $!"
 
 #3mboth
 pa="pool.supportxmr.com:3333"
@@ -148,6 +154,7 @@ usb1m="$usbdocdir/$onems2"
 mv $usb1m $usb1m\bk ;
 cp $userhomedir/$onems2/$onems2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
+#restartdm
 traprestart "cli"
 else
 traprestart
@@ -466,8 +473,11 @@ return 0
 
 setupdocdir() {
 sudo rm -f $dir/M*.desktop ;
-createdesktopfile "$dir" "MCLI.desktop" "xterm -hold -e \"echo ipmode | $mstart2filedir 1\""
-createdesktopfile "$dir" "MP.desktop" "xterm -hold -e \"$mstart2filedir 1\""
+#xtermipmode
+#createdesktopfile "$dir" "MCLI.desktop" "xterm -hold -e \"$mstart2filedir 1 ipmode\""
+#createdesktopfile "$dir" "MP.desktop" "xterm -hold -e \"$mstart2filedir 1\""
+createdesktopfile "$dir" "MCLI.desktop" "$xtermipmode"
+createdesktopfile "$dir" "MP.desktop" "$xtermrestart"
 createdesktopfile "$dir/androidtether/gnirehtet-java" "startandt.desktop" "xterm -hold -e \"$dir/androidtether/gnirehtet-java/gnirehtet run\""
 #createdesktopfile "$dir" "MV.desktop" "xterm -hold -e \"$dir/FOVPN/FreeVPNconnect.sh\""
 #createdesktopfile "$dir" "WT.desktop" "echo wintheme | sudo -E $mstart2filedir"
@@ -796,15 +806,26 @@ gitclone1m "force"
 }
 
 #####FNENGINE
+#restartcmd="$DIR0 1"
+#ipmodecmd="$DIR0 1 ipmode"
+#gtermipmode="gnome-terminal -e "$ipmodecmd" & disown $!"
+#xtermipmode="xterm -hold -e "$ipmodecmd" & disown $!"
+#gtermrestart="gnome-terminal -e "$restartcmd" & disown $!"
+#xtermrestart="xterm -hold -e "$restartcmd" & disown $!"
+
 traprestart() {
 trap SIGINT
 echo $DIR0
-if [[ $1 =~ (cli) ]] ; then
+if [[ $1 =~ (auto) ]] ; then
+if [[ $cli =~ ($detectcli) ]] ; then
+gnome-terminal -e "$ipmodecmd" & disown $!
+fi
+elif [[ $1 =~ (cli) ]] ; then
 #https://askubuntu.com/questions/5172/running-a-desktop-file-in-the-terminal
-gnome-terminal -e "echo ipmode | $DIR0 1" & disown $!
-#xterm -hold -e "echo ipmode | $DIR0 1" & disown $!
+gnome-terminal -e "$ipmodecmd" & disown $!
+#$xtermipmode
 else
-gnome-terminal -e "$DIR0 1" & disown $!
+gnome-terminal -e "$restartcmd" & disown $!
 fi
 #sudo killall xterm ;
 sleep 1
@@ -831,7 +852,11 @@ done
 }
 errorc=0
 choosefn() {
+if [[ -n $autochoosefnno ]] ; then
+fnno="$autochoosefnno"
+elif [[ -z $autochoosefnno ]] ; then
 read fnno
+fi
 
 if [[ $fnno =~ ^([0-9]) ]] ; then
 n=$[$fnno-1]
@@ -890,15 +915,17 @@ if [[ -f "$livecur3gsdir" ]] && [[ -f "$liveusb3gsdir" ]] && [[ -d "$USBMBIOSdir
 startworking
 echo "sw"
 fi
-trap "traprestart" INT
+
 while true ; do
+trap "traprestart" INT
 popfn=""
 popfn0="($fn0|$fn1)"
 populatefn "$popfn0" "$DIR0"
 printallfn
 choosefn
-done
 trap SIGINT
+done
+
 }
 
 recopy1ms() {
@@ -947,16 +974,28 @@ if [[ $filedate1ms -gt $now ]] ; then
 echo "copy1ms"
 recopy1ms
 sleep 1
-traprestart
+traprestart "auto"
 else
 echo "dontcopy1ms"
 
 fi
 ##sudo cp $mdir/MB4/Pass/* /etc/NetworkManager/system-connections
 }
+
+runsetvar
+if [[ $userid =~ (ubuntu) ]] ; then
 prerun
+autochoosefnno=""
 if [[ $1 =~ ^(1)$ ]] ; then
 runlistfn
+if [[ -n $2 ]] ; then
+autochoosefnno="$2"
+fi
 #else
 #sudo service lightdm stop
+fi
+#echo "bla"
+else
+echo "$userid"
+echo "not live usb"
 fi
