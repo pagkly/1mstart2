@@ -54,6 +54,7 @@ EOF
 runthisifuserubuntu "$ctorun"
 }
 runsetvar() {
+#https://stackoverflow.com/questions/31143874/how-to-concatenate-arrays-in-bash
 basic
 ctorun=$(cat<<EOF
 chown $userid /cdrom ;
@@ -61,7 +62,6 @@ EOF
 )
 runthisifuserubuntu "$ctorun"
 chmodeverything
-
 
 sfilename="start"
 sfiledir1="/cdrom/start"
