@@ -28,20 +28,26 @@ ethernetinf=$(awk '/ether/ {gsub("[:]","");print $2}' <<< "$(ip -o link show)")
 #'$DIR0 !~ /(loopback)/'
 activeinetinf=$(awk '!/loopback|enp2s0f0/ && /UP/ {gsub("[:]","");print $2}' <<< "$(ip -o link show)")
 echo "$activeinetinf"
+dir=/cdrom/notes/Documentsv2
 }
 runthisifuserubuntu() {
 command="$1"
 if [[ $userid =~ (ubuntu) ]] ; then
-$command
+"$command"
 else
 echo "user=$userid ; not ubuntu"
 fi
 }
-chmodeverything() {
-dir="/cdrom/notes/Documentsv2"
+chmodeverything2() {
 #dir="$userhomedir/Documents/Documentsv2"
 #/home/ubuntu/Documents/Documentsv2
-ctorun=$(cat<<EOF
+ctorun=$(cat <<'EOF'
+sudo chmod -R +x $dir
+EOF
+)
+runthisifuserubuntu "$ctorun"
+}
+chmodeverything() {
 sudo rm -f $dir/config.txt ;
 sudo rm -f $dir/nvidia.txt ;
 sudo rm -f $dir/cpu.txt ;
@@ -49,19 +55,17 @@ sudo rm -f $dir/xmr-stak-master/bin/config.txt ;
 sudo rm -f $dir/xmr-stak-master/bin/nvidia.txt ;
 sudo rm -f $dir/xmr-stak-master/bin/cpu.txt ;
 sudo chmod -R +x $dir ;
-EOF
-)
-runthisifuserubuntu "$ctorun"
 }
 runsetvar() {
-#https://stackoverflow.com/questions/31143874/how-to-concatenate-arrays-in-bash
 basic
 ctorun=$(cat<<EOF
-chown $userid /cdrom ;
+chown $userid /cdrom
 EOF
 )
-runthisifuserubuntu "$ctorun"
+#runthisifuserubuntu "$ctorun"
+chown $userid /cdrom ;
 chmodeverything
+
 
 sfilename="start"
 sfiledir1="/cdrom/start"
