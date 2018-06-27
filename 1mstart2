@@ -823,7 +823,7 @@ check1m() {
 #latestcommitdate="git show -s --format=%ci https://github.com/pagkly/1mstart2.git"
 link="github.com/pagkly/1mstart2"
 content=$(wget $link -q -O -)
-lastcommitdate="$(awk 'match($0, /([0-9]{14})( commit by ubuntu)/) {print substr($0, RSTART, 14)}' <<< "$content" | awk 'NR==1 {print}')"
+lastcommitdate="$(awk 'match($0, /([0-9]{14})( commit by )/) {print substr($0, RSTART, 14)}' <<< "$content" | awk 'NR==1 {print}')"
 curfiledate=$(getcurfiledate)
 echo "$curfiledate $lastcommitdate"
 
