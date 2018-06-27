@@ -28,12 +28,20 @@ ethernetinf=$(awk '/ether/ {gsub("[:]","");print $2}' <<< "$(ip -o link show)")
 #'$DIR0 !~ /(loopback)/'
 activeinetinf=$(awk '!/loopback|enp2s0f0/ && /UP/ {gsub("[:]","");print $2}' <<< "$(ip -o link show)")
 echo "$activeinetinf"
-chown $userid /cdrom ;
+}
+runthisifuserubuntu() {
+command="$1"
+if [[ $userid =~ (ubuntu) ]] ; then
+$command
+else
+echo "user=$userid ; not ubuntu"
+fi
 }
 chmodeverything() {
 dir="/cdrom/notes/Documentsv2"
 #dir="$userhomedir/Documents/Documentsv2"
 #/home/ubuntu/Documents/Documentsv2
+ctorun=$(cat<<EOF
 sudo rm -f $dir/config.txt ;
 sudo rm -f $dir/nvidia.txt ;
 sudo rm -f $dir/cpu.txt ;
@@ -41,10 +49,19 @@ sudo rm -f $dir/xmr-stak-master/bin/config.txt ;
 sudo rm -f $dir/xmr-stak-master/bin/nvidia.txt ;
 sudo rm -f $dir/xmr-stak-master/bin/cpu.txt ;
 sudo chmod -R +x $dir ;
+EOF
+)
+runthisifuserubuntu "$ctorun"
 }
 runsetvar() {
 basic
+ctorun=$(cat<<EOF
+chown $userid /cdrom ;
+EOF
+)
+runthisifuserubuntu "$ctorun"
 chmodeverything
+
 
 sfilename="start"
 sfiledir1="/cdrom/start"
@@ -53,12 +70,23 @@ curdm="lightdm"
 usbdir=$(awk '/'$userid'/ {printf $7"\n"}' <<< "$(lsblk)")
 usbdirc=$(echo "$usbdir" | wc -l)
 [[ $usbdirc -gt 1 ]] && echo "mount only 1 USB!!! pls restart" && sleep 3600
-echo "$usbdir"
-[[ -d "$usbdir" ]] && echo "USBDIR=$usbdir"
+[[ -d "$usbdir" ]] && echo "CURUSBDIR=$usbdir"
 sfiledir2="$usbdir/$sfilename"
 oldsfiledir="$usbdir/old$sfilename"
-c=("MBIOS" "MB1" "MB2" "MB3" "MB4" "MB5" "MB6" "MB7")
-USBMBIOSdir="$mdir/${c[0]}"
+c0=("MBIOS" "MUEFI" "MBT")
+c=("MB1" "MB2" "MB3" "MB4" "MB5" "MB6" "MB7")
+c1=()
+c1+=( "${c0[@]}" "${c[@]}" )
+c2=()
+c2+=( "${c0[0]}" "${c0[2]}" "${c[@]}" )
+USBMBIOSdir="$mdir/${c0[0]}"
+USBMUEFIdir="$mdir/${c0[1]}"
+#echo "${c0[@]}"
+#echo "${c[@]}"
+#echo "${c1[@]}"
+#echo "${c2[@]}"
+#echo "$USBMUEFIdir $USBMBIOSdir"
+#sleep 3600
 [[ -d "$USBMBIOSdir" ]] && echo "MBIOS=$USBMBIOSdir"
 winthemedone="$dir/setupdone"
 gc1mf="$dir/1mcloned"
@@ -121,7 +149,7 @@ gitclone1m() {
 
 if [[ $cli =~ ($detectcli) ]] || [[ $1 =~ (force) ]] ; then
 
-endno=$[${#c[@]}-1]
+endno=$[${#c2[@]}-1]
 if [[ $1 =~ (force) ]] ; then
 echo "include MBIOS"
 sudo killall xmrig xmrig-nvidia ;
@@ -131,7 +159,7 @@ else
 begno=1
 fi
 for ((a=$begno;a<=$endno;a++)) ; do
-USBLABEL="${c[$a]}"
+USBLABEL="${c2[$a]}"
 USBDIR="$mdir/$USBLABEL"
 echo "$a $USBDIR"
 if [[ -d $USBDIR ]] ; then
@@ -174,13 +202,13 @@ fi
  
 trial=$(cat <<EOF
 a=1
-endno=$[${#c[@]}-1]
+endno=$[${#c2[@]}-1]
 for ((a=$a;a<=$endno;a++)) ; do
-echo ${c[$a]}
+echo ${c2[$a]}
 done
 EOF
 )
-umountusb() {
+umountallusb() {
 #https://serverfault.com/questions/533844/disable-all-usb-devices-but-keyboard-mouse-flash-drive
 #kernel /vmlinuz-2.6.18-128.1.1.el5 ro root=LABEL=/ console=tty0 console=ttyS1,19200n8 nousb
 #https://www.linuxquestions.org/questions/linux-kernel-70/how-to-force-remove-a-kernel-module-686210/
@@ -297,7 +325,7 @@ mv $usbdir/newstart $usbdir/start
 else
 echo "DHCP"
 fi
-#umountusb &
+#umountallusb &
 }
 loginpsk() {
 #https://askubuntu.com/questions/423355/how-do-i-check-if-a-package-is-installed-on-my-server
@@ -418,9 +446,9 @@ read -p "compno : " compno
 echo "$compno"
 #a=0
 #while [ $a -lt 8 ] ; do
-endno=${#c[@]}
+endno=${#c2[@]}
 for ((a=1;a<=$endno;a++)) ; do
-USBLABEL="${c[$a]}"
+USBLABEL="${c2[$a]}"
 USBDIR="$mdir/$USBLABEL"
 echo "$a $USBDIR"
 if [[ -d $USBDIR ]] ; then
@@ -585,8 +613,7 @@ gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend 'false'
 gsettings set org.gnome.desktop.screensaver lock-enabled false
 gsettings set org.gnome.desktop.session idle-delay 0
 
-#umountusb
-
+umountallusb
 while true ; do 
 if [[ $($pingcommand) >/dev/null ]] ; then 
 echo "connected"
@@ -599,7 +626,6 @@ sudo ifconfig $ethernetinf down && sleep 5 && sudo ifconfig $ethernetinf up
 fi
 
 fi
-umountusb
 sleep 30
 done
 return 0
@@ -905,6 +931,13 @@ fi
 
 echo $fnno
 
+if [[ -n $autochoosefnno ]] ; then
+fnno=""
+autochoosefnno=""
+elif [[ -z $autochoosefnno ]] ; then
+echo "continue"
+fi
+
 return 0
 }
 runlistfn() {
@@ -952,7 +985,7 @@ formattedthisfdate="$(date -d "${thisfdate}" +%Y%m%d%H%M%S)"
 echo "$formattedthisfdate"
 }
 prerun() {
-runsetvar
+#runsetvar
 runpreenv=$(detectrunpreenvo)
 if [[ ! -f "$winthemedone" ]] ; then
 touch "$winthemedone" ;
@@ -984,14 +1017,19 @@ runsetvar
 if [[ $userid =~ (ubuntu) ]] ; then
 prerun
 autochoosefnno=""
+if [[ -z $2 ]] || [[ $2 =~ '&' ]] ; then
+echo "choosefn"
+elif [[ -n $2 ]] ; then
+autochoosefnno="$2"
+echo "choosethis=$autochoosefnno"
+fi
+
 if [[ $1 =~ ^(1)$ ]] ; then
 runlistfn
-if [[ -n $2 ]] ; then
-autochoosefnno="$2"
-fi
 #else
 #sudo service lightdm stop
 fi
+
 #echo "bla"
 else
 echo "$userid"
