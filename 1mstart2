@@ -200,11 +200,12 @@ if [[ -d "$mdir/MBT" ]] ; then
 #restartdm
 #forcerpeon
 traprestart "cli"
-else
+elif [[ ! -d "$mdir/MBT" ]] ; then
 forcerpeon
 traprestart "cli"
 fi
-else
+
+elif [[ ! $cli =~ ($detectcli) ]] ; then
 traprestart
 fi
 
