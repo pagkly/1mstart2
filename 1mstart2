@@ -691,7 +691,6 @@ gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend 'false'
 gsettings set org.gnome.desktop.screensaver lock-enabled false
 gsettings set org.gnome.desktop.session idle-delay 0
 
-umountallusb
 while true ; do 
 if [[ $($pingcommand) >/dev/null ]] ; then 
 echo "connected"
@@ -735,6 +734,7 @@ ipmode() {
 #forautomb
 #if [[ -f "$gc1mf" ]] ; then
 #echo "ipmode"
+umountallusb
 sudo killall xmrig ;
 sudo killall xmrig-nvidia ;
 minertype "10"
