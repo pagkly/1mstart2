@@ -194,10 +194,16 @@ usb1m="$usbdocdir/$onems2"
 mv $usb1m $usb1m\bk ;
 cp $userhomedir/$onems2/$onems2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
-forcerpeoff
-restartdm
+
+if [[ -d "$mdir/MBT" ]] ; then
+#forcerpeoff
+#restartdm
 #forcerpeon
-#traprestart "cli"
+traprestart "cli"
+else
+forcerpeon
+traprestart "cli"
+fi
 else
 traprestart
 fi
