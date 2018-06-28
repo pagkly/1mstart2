@@ -108,7 +108,7 @@ livecur1msdir="$dir/$onems2"
 liveusb3gsdir="$USBMBIOSdir/notes/$threegsn"
 livecur3gsdir="$userhomedir/Documents/$threegsn"
 fn0="wintheme|inetstaton|checkdhcp|minertype|staticnomanual"
-fn1="ipmode|choosetheme|resetdesktop|loginpsk|checkxmr|startgnirehtet|runvpn|startworking|cpgsnit|gitpushgsm|cp1m|check1m|forcegc1m|forceipmode|detectperipherals|traprestart"
+fn1="ipmode|choosetheme|resetdesktop|loginpsk|checkxmr|startgnirehtet|runvpn|startworking|cpgsnit|gitpushgsm|cp1m|check1m|forcegc1m|forceipmode|detectperipherals|traprestart|umountallusb"
 restartcmd="$DIR0 1"
 ipmodecmd="$DIR0 1 ipmode"
 gtermipmode="gnome-terminal -e "$ipmodecmd" & disown $!"
@@ -246,7 +246,8 @@ usbr="\/$1"
 else
 usbr=""
 fi
-mountno=($(awk '/('$mdir$usbr')/ {gsub("└─","");printf $1"\n"}' <<< "$(lsblk)"))
+mdircor="\/media\/ubuntu"
+mountno=($(awk '/('$mdircor')/ {gsub("└─","");printf $1"\n"}' <<< "$(lsblk)"))
 mount=($(for f in ${mountno[@]} ; do echo ${f} | sed -e "s,[0-9],,g" ; done))
 for f in ${!mountno[@]} ; do udisksctl unmount -b /dev/${mountno[f]} && udisksctl power-off -b /dev/${mount[f]} ; done
 }
