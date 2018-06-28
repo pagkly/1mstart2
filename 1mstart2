@@ -8,8 +8,8 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 scriptname="$(awk -F'/' '{print $NF}' <<< "$0")"
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-DIR0="$DIR/$scriptname"
+DIR1="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+DIR0="$DIR1/$scriptname"
 }
 getdirwh2
 #https://unix.stackexchange.com/questions/155551/how-to-debug-a-bash-script
@@ -78,7 +78,14 @@ usbdirc=$(echo "$usbdir" | wc -l)
 sfiledir2="$usbdir/$sfilename"
 oldsfiledir="$usbdir/old$sfilename"
 c0=("MBIOS" "MUEFI" "MBT")
-c=("MB1" "MB2" "MB3" "MB4" "MB5" "MB6" "MB7")
+
+c=()
+begno=1
+endno=7
+for ((i=$begno;i<=$endno;i++)); do
+c=( "${c[@]}" "MB$i" )
+done
+echo "${c[@]}"
 c1=()
 c1+=( "${c0[@]}" "${c[@]}" )
 c2=()
@@ -100,8 +107,8 @@ liveusb1msdir="$USBMBIOSdir/notes/Documentsv2/$onems2"
 livecur1msdir="$dir/$onems2"
 liveusb3gsdir="$USBMBIOSdir/notes/$threegsn"
 livecur3gsdir="$userhomedir/Documents/$threegsn"
-fn0="wintheme|inetstaton|checkdhcp|minertype"
-fn1="ipmode|choosetheme|resetdesktop|loginpsk|staticnomanual|checkxmr|startgnirehtet|runvpn|traprestart|startworking|cpgsnit|gitpushgsm|cp1m|check1m|forcegc1m|forceipmode"
+fn0="wintheme|inetstaton|checkdhcp|minertype|staticnomanual"
+fn1="ipmode|choosetheme|resetdesktop|loginpsk|checkxmr|startgnirehtet|runvpn|startworking|cpgsnit|gitpushgsm|cp1m|check1m|forcegc1m|forceipmode|detectperipherals|traprestart"
 restartcmd="$DIR0 1"
 ipmodecmd="$DIR0 1 ipmode"
 gtermipmode="gnome-terminal -e "$ipmodecmd" & disown $!"
@@ -187,8 +194,8 @@ usb1m="$usbdocdir/$onems2"
 mv $usb1m $usb1m\bk ;
 cp $userhomedir/$onems2/$onems2 $usbdocdir
 if [[ $cli =~ ($detectcli) ]] ; then
-restartdm
-#traprestart "cli"
+#restartdm
+traprestart "cli"
 else
 traprestart
 fi
@@ -235,6 +242,44 @@ mount=($(for f in ${mountno[@]} ; do echo ${f} | sed -e "s,[0-9],,g" ; done))
 for f in ${!mountno[@]} ; do udisksctl unmount -b /dev/${mountno[f]} && udisksctl power-off -b /dev/${mount[f]} ; done
 }
 
+
+detectlist() {
+listpa=("$1")
+#echo "$listpa"
+if [[ -n "$2" ]] ; then
+delimiter="-F'$2' "
+echo $delimiter
+elif [[ -z "$2" ]] ; then
+delimiter=
+fi
+listp2=
+begno=1
+endno=$(wc -l <<< "$listpa")
+#endno=${#listpa[@]}
+echo "endno=$endno"
+for ((i=$begno;i<=$endno;i++)) ; do
+p="$(awk -F';;' 'NR=='$i' {printf $1}' <<< "$listpa")"
+echo "$i.$p"
+if [[ $i -eq 1 ]] ; then
+listp2=$p
+elif [[ $i -gt 1 ]] ; then
+listp2=${listp2[@]}"\|"$p
+fi
+done
+echo "$listp2"
+}
+
+detectperipherals() {
+listp=$(cat <<EOF
+Holtek Semiconductor, Inc.
+Cypress Semiconductor Corp.
+C-Media Electronics, Inc.
+EOF
+)
+detectlist "$listp" ";;"
+#perip=$(awk 'match($0, /('$listp2')/) {print}' <<< "$(lsusb)")
+}
+
 checkdhcp() {
 #https://unix.stackexchange.com/questions/44376/how-to-find-out-if-ubuntu-is-using-dhcp-ubuntu-12-04-lts-gui?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 c=0
@@ -247,18 +292,17 @@ if [[ $(ls /var/lib/dhcp) >/dev/null ]] ; then
 echo "DHCP connected"
 else
 
-if [[ -z $($pingcommand) ]] ; then
+if [[ -z $($pingcommand) ]] && [[ -f $winthemedone ]] ; then
 if [[ $ethernetinf =~ (enp3s0) ]] && [[ -z $(awk "/static/ {print}" "$sfiledir1" ) ]] ; then
+echo "enp3s0;dhcp no internet"
 loopstaticip
-
-
 if [[ $cli =~ ($detectcli) ]] ; then
 restartdm
 sleep 1
 exit
 fi
 
-elif [[ $ethernetinf =~ (enp3s0) ]] && [[ -n $(awk "/static/ {print}" "$sfiledir1" ) ]] ; then
+elif [[ $ethernetinf =~ (enp3s0) ]] && [[ -n $(awk "/static/ {print}" "$sfiledir1") ]] ; then
 detectstaticineto
 elif [[ $activeinetinf =~ (wlp3s0b1) ]] ; then
 loginpsk
@@ -267,7 +311,6 @@ fi
 
 fi
 
-#gitclone1m &
 check1mwd &
 }
 getip() {
@@ -451,6 +494,8 @@ echo "$compno"
 #a=0
 #while [ $a -lt 8 ] ; do
 endno=${#c2[@]}
+echo endno=$endno
+sleep 100
 for ((a=1;a<=$endno;a++)) ; do
 USBLABEL="${c2[$a]}"
 USBDIR="$mdir/$USBLABEL"
@@ -559,8 +604,28 @@ offmonitormousekeybret() {
 #setterm --powersave powerdown
 #https://unix.stackexchange.com/questions/237799/laptop-with-bad-monitor-turned-into-server-how-to-disable-monitor
 #https://askubuntu.com/questions/896375/external-screen-recognized-but-black
-for id in `xinput --list|grep 'Gaming\|Mouse\|MOUSE\|pointer\|keyboard\|Keyboard\|Type\|Cover\|Razer\|Logitech\|Microsoft\|HP\|Dell\|Apple\|Lenovo'|perl -ne 'while (m/id=(\d+)/g){print "$1\n";}'`; do
-    xinput set-prop $id 'Device Enabled' 0
+listp=
+listp=$(cat <<EOF
+Gaming
+Mouse
+MOUSE
+pointer
+keyboard
+Keyboard
+Type
+Cover
+Razer
+Logitech
+Microsoft
+HP
+Dell
+Apple
+Lenovo
+EOF
+)
+detectlist "$listp" ";;"
+for id in $(xinput --list | grep "$listp2" | perl -ne 'while (m/id=(\d+)/g){print "$1\n";}'); do
+xinput set-prop $id 'Device Enabled' 0
 done
 #sudo service lightdm stop ;
 #sudo service gdm stop ;
@@ -757,12 +822,16 @@ layoutmanagerdir="$dir/TW/layoutmanager.sh"
 sudo chmod +x $layoutmanagerdir
 $layoutmanagerdir &
 }
+deletenohup() {
+sudo rm -f "$dir/nohup.out" ;
+}
 checkxmr() {
 command=$(cat <<EOF
 /opt/google/chrome/chrome --password-store=basic --tab "supportxmr.com/#/dashboard" --tab "google.com/45kFvJmKx6DapX1bQ35YzLVAs8fa41XnAMZT952QCRRrC95DFCqnFC8NC4WfcVwKDTY8qJiFkYQu9F7E4rLcyVK8P8WQtxo"
 EOF
 )
 nohup xterm -hold -e "$command" & 
+deletenohup
 #disown
 #cxmrsc="./checkxmr"
 #echo '#!/bin/bash' | tee "$cxmrsc"
@@ -832,12 +901,43 @@ echo "skipupdatenow"
 else
 echo "updatenow"
 forcerpeon
-gitclone1m "force"
+forcegc1m
 fi
 }
 
 forcegc1m() {
 gitclone1m "force"
+}
+
+gettimenowinnumber() {
+now=$(date +%Y%m%d%H%M%S)
+echo "nowdate=$now"
+}
+
+getthisfiledate() {
+thisfile="$1"
+thisdatefile="$(stat -c %y "${thisfile}")"
+thisfdate="$(awk -F" " '{printf $1" "$2}' <<< "${thisdatefile}")"
+formattedthisfdate="$(date -d "${thisfdate}" +%Y%m%d%H%M%S)"
+echo "$formattedthisfdate"
+}
+recopy1ms() {
+mv $livecur1msdir $livecur1msdir\bkr
+cp $livecur1msdir\bkr $livecur1msdir
+chmod +x $livecur1msdir
+}
+timefix1ms() {
+gettimenowinnumber
+filedate1ms=$(getthisfiledate "$livecur1msdir")
+if [[ $filedate1ms -gt $now ]] ; then
+echo "copy1ms"
+recopy1ms
+sleep 1
+#traprestart "auto"
+restartdm
+else
+echo "dontcopy1ms"
+fi
 }
 
 #####FNENGINE
@@ -888,7 +988,11 @@ fi
 if [[ $fnno =~ ^([0-9]) ]] ; then
 n=$[$fnno-1]
 fn="${popfnarray[$[$fnno-1]]}"
-echo "$n.$fn"
+echo "run $n.$fn"
+elif [[ ! $fnno =~ ^([0-9]) ]] ; then
+fn=$fnno
+echo "run fnno=$fn"
+fi
 
 if [[ $fn =~ (wintheme) ]] ; then
 $fn
@@ -902,27 +1006,14 @@ elif [[ $fn =~ (minertype) ]] ; then
 read -p "MTYPE :"  mtype
 echo "$mtype!"
 $fn "$mtype"
-elif [[ $fn =~ ($fn1) ]] ; then
-$fn &
-fi
-
-
-elif [[ $fnno =~ (wintheme) ]] ; then
+elif [[ $fn =~ (staticnomanual) ]] ; then
 $fn
-elif [[ $fnno =~ (inetstaton) ]]; then
-read -p 'COMPNO : ' number
-echo "Static ip for $number!"
-$fn "$number" &
-elif [[ $fnno =~ (loopstaticip) ]] ; then
+elif [[ $fn =~ (detectperipherals) ]] ; then
+$fn
+elif [[ $fn =~ ($fn1) ]] ; then
+echo $fn
 $fn &
-elif [[ $fnno =~ (minertype) ]] ; then
-read -p "MTYPE :"  mtype
-echo "$mtype!"
-$fn "$mtype"
-elif [[ $fnno =~ ($fn1) ]] ; then
-echo $fnno
-$fnno &
-elif [[ $fnno =~ ^(ip|ipmode)$ ]] ; then
+elif [[ $fn =~ ^(ip|ipmode)$ ]] ; then
 ipmode
 else
 if [[ $errorc -eq 100 ]] ; then
@@ -933,24 +1024,24 @@ echo "nftrya"
 
 fi
 
-echo $fnno
-
 if [[ -n $autochoosefnno ]] ; then
+fn=""
 fnno=""
 autochoosefnno=""
 elif [[ -z $autochoosefnno ]] ; then
-echo "continue"
+echo "notauto"
 fi
 
 return 0
 }
 runlistfn() {
 if [[ -f "$livecur3gsdir" ]] && [[ -f "$liveusb3gsdir" ]] && [[ -d "$USBMBIOSdir" ]] ; then
-startworking
-echo "sw"
+startworking &
 fi
 
+
 while true ; do
+deletenohup
 trap "traprestart" INT
 popfn=""
 popfn0="($fn0|$fn1)"
@@ -962,11 +1053,6 @@ done
 
 }
 
-recopy1ms() {
-mv $livecur1msdir $livecur1msdir\bkr
-cp $livecur1msdir\bkr $livecur1msdir
-chmod +x $livecur1msdir
-}
 detectrunpreenvo() {
 texttodetect="(runpreenv)"
 dtextobject=$(detext "$sfiledir1" "$texttodetect")
@@ -976,18 +1062,6 @@ echo "rpenvo=$runpreenv"
 fi
 }
 #detectrunpreenvo
-gettimenowinnumber() {
-now=$(date +%Y%m%d%H%M%S)
-echo "nowdate=$now"
-}
-
-getthisfiledate() {
-thisfile="$1"
-thisdatefile="$(stat -c %y "${thisfile}")"
-thisfdate="$(awk -F" " '{printf $1" "$2}' <<< "${thisdatefile}")"
-formattedthisfdate="$(date -d "${thisfdate}" +%Y%m%d%H%M%S)"
-echo "$formattedthisfdate"
-}
 prerun() {
 #runsetvar
 runpreenv=$(detectrunpreenvo)
@@ -999,23 +1073,15 @@ cpgsnit
 restartdm
 fi
 wintheme &
+if [[ -f "$winthemedone" ]] ; then
 checkdhcp &
+fi
 updatetime
 
-gettimenowinnumber
-filedate1ms=$(getthisfiledate "$livecur1msdir")
-if [[ $filedate1ms -gt $now ]] ; then
-echo "copy1ms"
-recopy1ms
-sleep 1
-#traprestart "auto"
-restartdm
-else
-echo "dontcopy1ms"
-
-fi
+timefix1ms
 ##sudo cp $mdir/MB4/Pass/* /etc/NetworkManager/system-connections
 }
+
 
 runsetvar
 if [[ $userid =~ (ubuntu) ]] ; then
