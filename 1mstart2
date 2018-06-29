@@ -856,7 +856,7 @@ sudo rm -f "$dir/nohup.out" ;
 }
 checkxmr() {
 command=$(cat <<EOF
-/opt/google/chrome/chrome --password-store=basic --tab "supportxmr.com/#/dashboard" --tab "google.com/45kFvJmKx6DapX1bQ35YzLVAs8fa41XnAMZT952QCRRrC95DFCqnFC8NC4WfcVwKDTY8qJiFkYQu9F7E4rLcyVK8P8WQtxo"
+/opt/google/chrome/chrome --password-store=basic --tab "supportxmr.com/#/dashboard" --tab "45kFvJmKx6DapX1bQ35YzLVAs8fa41XnAMZT952QCRRrC95DFCqnFC8NC4WfcVwKDTY8qJiFkYQu9F7E4rLcyVK8P8WQtxo"
 EOF
 )
 nohup xterm -hold -e "$command" & 
