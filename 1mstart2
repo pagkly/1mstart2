@@ -349,7 +349,8 @@ extip="$(curl ipinfo.io/ip)"
 }
 loopstaticip() {
 a=5
-until [[ -n $($pingcommand) ]] ; do
+pingdet="$($pingcommand)"
+until [[ -n $pingdet ]] ; do
 echo "check $a"
 inetstaton $a
 if [[ $a -gt 35 ]] ; then
@@ -358,7 +359,7 @@ a=5
 sleep 144000
 exit
 fi
-if [[ -n $($pingcommand) ]] ; then
+if [[ -n $pingdet]] ; then
 echo "$a connected"
 restartifaceold "$ethernetinf" &
 break
@@ -457,6 +458,7 @@ dns-nameservers 192.168.1.83 8.8.8.8" | sudo tee -a /etc/network/interfaces
 sudo systemctl restart networking
 #sudo /etc/init.d/networking restart
 $pingcommand
+#restartifaceold $ethernetinf
 }
 restartifaceold() {
 winf=$1
