@@ -29,6 +29,7 @@ ethernetinf=$(awk '/ether/ {gsub("[:]","");print $2}' <<< "$(ip -o link show)")
 activeinetinf=$(awk '!/loopback|enp2s0f0/ && /UP/ {gsub("[:]","");print $2}' <<< "$(ip -o link show)")
 echo "$activeinetinf"
 dir=/cdrom/notes/Documentsv2
+#dir=$userhomedir/Documents/Documentsv2
 }
 runthisifuserubuntu() {
 command="$1"
@@ -204,6 +205,7 @@ usbdocdir="$USBDIR/notes/Documentsv2"
 if [[ ! -f "$gc1mf" ]] ; then
 #sudo apt-get install -y git
 cur1m=$dir/$onems2
+sudo chown $userid -R $userhomedir/$onems2
 sudo rm -rf $userhomedir/$onems2 ;
 sudo rm -f $userhomedir/$onems2 ;
 cd $userhomedir
@@ -876,8 +878,8 @@ xterm -hold -e \"$dir/FOVPN/FreeVPNconnect.sh\"
 }
 startworking() {
 #https://stackoverflow.com/questions/9117507/linux-unix-command-to-determine-if-process-is-running
-[[ -z $(awk '/nautilus/' <<< "$(ps cax)") ]] && nautilus "$userhomedir/Documents/Documentsv2" & disown
-[[ -z $(awk '/gedit/' <<< "$(ps cax)") ]] && gedit "$livecur3gsdir" "$livecur1msdir" & disown 
+[[ -z $(awk '/nautilus/' <<< "$(ps cax)") ]] && nohup nautilus "$userhomedir/Documents/Documentsv2">/dev/null & disown
+[[ -z $(awk '/gedit/' <<< "$(ps cax)") ]] && nohup gedit "$livecur3gsdir" "$livecur1msdir">/dev/null & disown 
 [[ -z $(awk '/chrome/' <<< "$(ps cax)") ]] && checkxmr & disown
 }
 checkcur1m() {
