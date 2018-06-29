@@ -180,8 +180,8 @@ usbdocdir="$USBDIR/notes/Documentsv2"
 if [[ ! -f "$gc1mf" ]] ; then
 #sudo apt-get install -y git
 cur1m=$dir/$onems2
-rm -rf $userhomedir/$onems2 ;
-rm -f $userhomedir/$onems2 ;
+sudo rm -rf $userhomedir/$onems2 ;
+sudo rm -f $userhomedir/$onems2 ;
 cd $userhomedir
 git clone https://github.com/pagkly/$onems2.git
 mv $cur1m $cur1m\bk
