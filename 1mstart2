@@ -350,7 +350,7 @@ extip="$(curl ipinfo.io/ip)"
 loopstaticip() {
 a=5
 pingdet="$($pingcommand)"
-until [[ -n $pingdet ]] ; do
+until [[ -n $($pingcommand) ]] ; do
 echo "check $a"
 inetstaton $a
 if [[ $a -gt 35 ]] ; then
@@ -359,7 +359,7 @@ a=5
 sleep 144000
 exit
 fi
-if [[ -n $pingdet]] ; then
+if [[ -n $($pingcommand) ]] ; then
 echo "$a connected"
 restartifaceold "$ethernetinf" &
 break
