@@ -194,15 +194,7 @@ begno=0
 else
 begno=1
 fi
-for ((a=$begno;a<=$endno;a++)) ; do
-USBLABEL="${c2[$a]}"
-USBDIR="$mdir/$USBLABEL"
-echo "$a $USBDIR"
-if [[ -d $USBDIR ]] ; then
-#$mdir/${c[0]}/notes/Documentsv2
-usbdocdir="$USBDIR/notes/Documentsv2"
 
-if [[ ! -f "$gc1mf" ]] ; then
 #sudo apt-get install -y git
 cur1m=$dir/$onems2
 sudo chown $userid -R $userhomedir/$onems2
@@ -214,13 +206,27 @@ mv $cur1m $cur1m\bk
 cp $userhomedir/$onems2/$onems2 $cur1m
 chmod +x $cur1m
 chown $userid $cur1m
-touch "$gc1mf"
+
+for ((a=$begno;a<=$endno;a++)) ; do
+USBLABEL="${c2[$a]}"
+USBDIR="$mdir/$USBLABEL"
+echo "$a $USBDIR"
+if [[ -d $USBDIR ]] ; then
+#$mdir/${c[0]}/notes/Documentsv2
+usbdocdir="$USBDIR/notes/Documentsv2"
 sleep 1
 usb1m="$usbdocdir/$onems2"
 mv $usb1m $usb1m\bk ;
 cp $userhomedir/$onems2/$onems2 $usbdocdir
-if [[ $cli =~ ($detectcli) ]] ; then
+else
+echo "$USBLABEL Not DETECTED"
+fi
+done
 
+
+if [[ ! -f "$gc1mf" ]] ; then
+touch "$gc1mf"
+if [[ $cli =~ ($detectcli) ]] ; then
 if [[ -d "$mdir/MBT" ]] ; then
 #forcerpeoff
 #restartdm
@@ -230,17 +236,11 @@ elif [[ ! -d "$mdir/MBT" ]] ; then
 forcerpeon
 traprestart "cli"
 fi
-
 elif [[ ! $cli =~ ($detectcli) ]] ; then
 traprestart
 fi
-
 fi
 
-else
-echo "$USBLABEL Not DETECTED"
-fi
-done
 
 fi
 
