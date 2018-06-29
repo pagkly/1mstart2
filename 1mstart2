@@ -79,17 +79,41 @@ sfiledir2="$usbdir/$sfilename"
 oldsfiledir="$usbdir/old$sfilename"
 c0=("MBIOS" "MUEFI" "MBT")
 
+usbdesc=$(
+cat <<EOF
+MBIOS;;ID 0781:5567 SanDisk Corp. Cruzer Blade;;SDB
+MUEFI;;ID 090c:1000 Silicon Motion, Inc. - Taiwan (formerly Feiya Technology Corp.) Flash Drive;;Yellow
+MBT;;ID 13fe:5500 Kingston Technology Company Inc.;;Blue
+MB2;;ID 090c:1000 Silicon Motion, Inc. - Taiwan (formerly Feiya Technology Corp.) Flash Drive;;Suit
+MB3;;ID 0781:5572 SanDisk Corp.;;SDCSwitch
+MB4;;ID 13fe:4200 Kingston Technology Company Inc.;;Green
+MB7;;ID abcd:1234 Unknown;;BlueUSB2Slim
+Broken256;;ID ffff:1201
+U160404;;SanDiskM
+U180401;;ID 048d:1176 Integrated Technology Express, Inc.;;MB5
+
+MT1;;ID 0781:5567 SanDisk Corp. Cruzer Blade
+DATA2;;ID 0781:5581 SanDisk Corp. Ultra
+USB32DT;;ID 0951:1666 Kingston Technology DataTraveler G4
+DATAS64;;ID 090c:1000 Silicon Motion, Inc. - Taiwan (formerly Feiya Technology Corp.) Flash Drive
+EOF
+)
 c=()
 begno=1
 endno=7
 for ((i=$begno;i<=$endno;i++)); do
 c=( "${c[@]}" "MB$i" )
 done
+#REMOVETHIS
+c=($(awk '{gsub(/MB1|MB5|MB6/,"");print}' <<< "${c[@]}"))
 echo "${c[@]}"
+
 c1=()
 c1+=( "${c0[@]}" "${c[@]}" )
 c2=()
 c2+=( "${c0[0]}" "${c0[2]}" "${c[@]}" )
+c3=()
+c3+=( "${c0[2]}" "${c[@]}" )
 USBMBIOSdir="$mdir/${c0[0]}"
 USBMUEFIdir="$mdir/${c0[1]}"
 #echo "${c0[@]}"
