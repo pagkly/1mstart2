@@ -244,14 +244,7 @@ fi
 
 }
  
-trial=$(cat <<EOF
-a=1
-endno=$[${#c2[@]}-1]
-for ((a=$a;a<=$endno;a++)) ; do
-echo ${c2[$a]}
-done
-EOF
-)
+
 umountallusb() {
 #https://serverfault.com/questions/533844/disable-all-usb-devices-but-keyboard-mouse-flash-drive
 #kernel /vmlinuz-2.6.18-128.1.1.el5 ro root=LABEL=/ console=tty0 console=ttyS1,19200n8 nousb
