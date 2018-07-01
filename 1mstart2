@@ -725,6 +725,7 @@ sudo ifconfig $ethernetinf down && sleep 5 && sudo ifconfig $ethernetinf up
 fi
 
 fi
+offmonitormousekeybret
 sleep 30
 done
 return 0
@@ -748,10 +749,7 @@ xterm -hold -e "sudo $dir/$xmrig -o $pa -u $wa --donate-level=$donate% -p $usern
 xterm -hold -e "sudo $dir/$xmrign -o $pa -u $wa --donate-level=$donate% -p $userno" &
 fi
 }
-ipmode2() {
-echo "bla2"
-sleep 3600
-}
+
 ipmode() {
 #forautomb
 #if [[ -f "$gc1mf" ]] ; then
