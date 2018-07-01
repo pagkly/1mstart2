@@ -152,10 +152,12 @@ currency="monero7"
 donate=0
 
 winthemescdir="$dir/wintheme"
+gitlocalrepodir="$userhomedir/agit"
+localtz="/usr/share/zoneinfo/Australia/Melbourne"
 }
 updatetz() {
 #sudo apt-get install -y ntp
-sudo cp /usr/share/zoneinfo/Australia/Melbourne /etc/localtime
+sudo cp $localtz /etc/localtime
 }
 updatetime() {
 #http://www.informit.com/articles/article.aspx?p=1161217&seqNum=11
