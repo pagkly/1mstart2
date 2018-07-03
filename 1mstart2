@@ -199,13 +199,15 @@ fi
 
 #sudo apt-get install -y git
 cur1m=$dir/$onems2
-sudo chown $userid -R $userhomedir/$onems2
-sudo rm -rf $userhomedir/$onems2 ;
-sudo rm -f $userhomedir/$onems2 ;
-cd $userhomedir
+onemslocalrepodir="$gitlocalrepodir/$onems2"
+onemsscriptlocalrepodir="$onemslocalrepodir/$onems2"
+sudo chown $userid -R $onemslocalrepodir
+sudo rm -rf $onemslocalrepodir ;
+sudo rm -f $onemslocalrepodir ;
+cd $gitlocalrepodir
 git clone https://github.com/pagkly/$onems2.git
 mv $cur1m $cur1m\bk
-cp $userhomedir/$onems2/$onems2 $cur1m
+cp $onemsscriptlocalrepodir $cur1m
 chmod +x $cur1m
 chown $userid $cur1m
 
@@ -219,7 +221,7 @@ usbdocdir="$USBDIR/notes/Documentsv2"
 sleep 1
 usb1m="$usbdocdir/$onems2"
 mv $usb1m $usb1m\bk ;
-cp $userhomedir/$onems2/$onems2 $usbdocdir
+cp $onemsscriptlocalrepodir $usbdocdir
 else
 echo "$USBLABEL Not DETECTED"
 fi
@@ -684,6 +686,7 @@ gitpushgsm
 fi
 sudo rm -rf $userhomedir/$onems2 ;
 sudo rm -rf $userhomedir/$threegsn ;
+sudo rm -rf $userhomedir/$gitlocalrepodir ;
 sudo rm -rf $dir/$threegsn ;
 sudo rm -rf $dir/others ;
 
