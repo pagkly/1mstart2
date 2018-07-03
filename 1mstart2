@@ -175,6 +175,11 @@ formattedthisfdate="$(date -d "${thisfdate}" +%Y%m%d%H%M%S)"
 echo "$formattedthisfdate"
 }
 
+checkagit() {
+if [[ ! -d "$gitlocalrepodir" ]] ; then
+mkdir "$gitlocalrepodir"
+fi
+}
 gitclone1m() {
 #sudo apt-get update --fix-missing ;
 #sudo apt-get install -y libmicrohttpd-dev \
@@ -184,7 +189,7 @@ gitclone1m() {
 
 #sudo rm -f ~/Documents/Documentsv2/setupdone
 #sudo $cur1m
-
+checkagit
 if [[ $cli =~ ($detectcli) ]] || [[ $1 =~ (force) ]] ; then
 
 endno=$[${#c2[@]}-1]
