@@ -72,7 +72,7 @@ sfilename="start"
 sfiledir1="/cdrom/start"
 detectcli="text|textonly|systemd.unit=multi-user.target"
 curdm="lightdm"
-usbdir=$(awk '/'$userid'/ {printf $7"\n"}' <<< "$(lsblk)")
+usbdir=$(awk '/'$userid'/ {printf $7"\n"}' <<< "$(lsblk)" | grep MB)
 usbdirc=$(echo "$usbdir" | wc -l)
 [[ $usbdirc -gt 1 ]] && echo "mount only 1 USB!!! pls restart" && sleep 3600
 [[ -d "$usbdir" ]] && echo "CURUSBDIR=$usbdir"
@@ -150,6 +150,8 @@ xmrig="xmrig/build/xmrig"
 xmrign="xmrig-nvidia/build/xmrig-nvidia"
 currency="monero7"
 donate=0
+#xterm -hold -e "sudo $dir/$xmrig -o $pa -u $wa --donate-level=$donate% -p $userno" &
+#xterm -hold -e "sudo $dir/$xmrign -o $pa -u $wa --donate-level=$donate% -p $userno" &
 
 winthemescdir="$dir/wintheme"
 gitlocalrepodir="$userhomedir/agit"
